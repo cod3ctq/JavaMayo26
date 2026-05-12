@@ -47,6 +47,7 @@ public class Main {
         //Creacion del objeto compuesto: Necesito de otros objetos más pequeños.
         Camarajava c1 = new Camarajava(5.00, 1.3, 1, 2.8, 10, 800);
         Camarajava[] cams = {c1};
+
         Camarajava c2 = new Camarajava(200.00,1.3,1,2.8,10,800);
         Camarajava c3 = new Camarajava(12.00,1.3,1,2.8,10,800);
         Camarajava c4 = new Camarajava(20.00,1.3,1,2.8,10,800);
@@ -54,13 +55,30 @@ public class Main {
 
 
 
+
+        Pantalla pant1 = new Pantalla("240x360",2.6,false,true,500,30);
+        Pantalla pant2 = new Pantalla("2k",6.8,true,true,1500,120);
+
         //Creacion del objeto compuesto: Necesito de otros objetos más pequeños.
-        Smartphone sm = new Smartphone("Nokia N958GB", "Nokia", 8000, 1200, "Symbian s60v3", cams);
-        Smartphone s2 = new Smartphone("S23ULTRA", "Samsung", 2600, 5000, "Android 17", canSamsung);
+
+        Smartphone sm = new Smartphone("Nokia N958GB", "Nokia", 8000, 1200, "Symbian s60v3", cams,pant1);
+        Smartphone s2 = new Smartphone("S23ULTRA", "Samsung", 2600, 5000, "Android 17", canSamsung,pant2);
+
+        //Invocando metodos de la clase padre desde una instancia de la clase hija.
         sm.mandarMensaje("525264","Mensaje desde el smartphone");
         sm.hacerLlamada("254556564");
 
+        //Invocando metodos nativos de la clase hija (le pertenecen solo a la clase hija)
+        sm.instalarAplicaciones();
+        sm.hacerVideoLlamada();
+
+        //Invoca metodos de la clase hija desde una instancia de la clase Padre
+        //Eso no se puede hacer
+        //c.instalarAplicaciones();
+
+
         System.out.println(sm);
+        System.out.println(s2);
 
 
 
