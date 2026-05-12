@@ -1,5 +1,6 @@
 //La herencia permite reutilizar y/o absorber los miembros de una clase en otra
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Smartphone extends Celular{
@@ -8,14 +9,17 @@ public class Smartphone extends Celular{
 
     Camara []cam;
 
+    Pantalla display;
+
     public  Smartphone(){
 
     }
 
-    public Smartphone(String modelo, String marca, Double precio, int mAh, String sistemaOperativo, Camara[] cam) {
+    public Smartphone(String modelo, String marca, Double precio, int mAh, String sistemaOperativo, Camara[] cam, Pantalla display) {
         super(modelo, marca, precio, mAh);
         this.sistemaOperativo = sistemaOperativo;
         this.cam = cam;
+        this.display = display;
     }
 
     public String getSistemaOperativo() {
@@ -29,11 +33,13 @@ public class Smartphone extends Celular{
     @Override
     public String toString() {
         return "Smartphone{" +
-                "sistemaOperativo='" + sistemaOperativo + '\'' +
+                "display=" + display +
                 ", modelo='" + modelo + '\'' +
                 ", marca='" + marca + '\'' +
                 ", precio=" + precio +
                 ", mAh=" + mAh +
+                ", cam=" + Arrays.toString(cam) +
+                ", sistemaOperativo='" + sistemaOperativo + '\'' +
                 '}';
     }
 
@@ -68,7 +74,18 @@ public class Smartphone extends Celular{
     }
     public void hacerLlamada(String numero){
         System.out.println("Marcando al numero: "+numero);
+
+
+
+    }
+    public void instalarAplicaciones(){
+
     }
 
+    public void hacerVideollamada(){
+
+    }
 
 }
+
+
