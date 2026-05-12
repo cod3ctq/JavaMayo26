@@ -48,11 +48,23 @@ public class Main {
     Camara c3 = new Camara(12.00, 1.3, 1, 2.8, 10, 800);
     Camara c4 = new Camara(20.00, 1.3, 1, 2.8, 10, 800);
     Camara[] camSansung = {c1,c2,c3,c4};
-    Smartphone sm= new Smartphone("N95", "Nokia", 800, 1200, "Symbian", c1);
-    Smartphone sm2 = new Smartphone("S23Ultra", "Nokia", 800, 1200, "Symbian", camSansung);
+
+    Pantalla pant1 = new Pantalla("240x360", 2.6, false, true, 500, 30);
+    Pantalla pant2 = new Pantalla("2k", 6.8, true, true, 1500, 120);
+
+    Smartphone sm= new Smartphone("N95", "Nokia", 800, 1200, "Symbian",cams, pant1);
+    Smartphone sm2 = new Smartphone("S23Ultra", "Nokia", 800, 1200, "Symbian",camSansung, pant2);
     sm2.mandarMensaje("5516903456", "Mensaje enviado desde smartphone");
     sm2.hacerLlamada("666666666");
-    System.out.println(sm2);
+
+        System.out.println(sm);
+        System.out.println(sm2);
+
+        //invocando metodos nativos de la clase hija
+        sm.instalarAplicaciones();
+        sm.hacerVideollamada();
+
+
 
     }
 }
