@@ -2,17 +2,20 @@
 //Herencia relación "ES UN"
 //Permite especializar modelos
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Smartphone extends Celular{
 
     String sistemaOperativo;
     Camarajava[] cams;
+    Pantalla display;
 
-    public Smartphone(String modelo, String marca, double precio, int mAh, String sistemaOperativo, Camarajava[] cams) {
+    public Smartphone(String modelo, String marca, double precio, int mAh, String sistemaOperativo, Camarajava[] cams, Pantalla display) {
         super(modelo, marca, precio, mAh);
         this.sistemaOperativo = sistemaOperativo;
         this.cams = cams;
+        this.display = display;
     }
 
     public String getSistemaOperativo() {
@@ -31,16 +34,13 @@ public class Smartphone extends Celular{
         this.cams = cams;
     }
 
-    @Override
-    public String toString() {
-        return "Smartphone{" +
-                "modelo='" + modelo + '\'' +
-                ", marca='" + marca + '\'' +
-                ", precio=" + precio +
-                ", mAh=" + mAh +
-                '}';
+    public Pantalla getDisplay() {
+        return display;
     }
 
+    public void setDisplay(Pantalla display) {
+        this.display = display;
+    }
 
 
     //Método de la forma 2: Heredado y sobreescrito
@@ -80,4 +80,25 @@ public class Smartphone extends Celular{
     public void hacerLlamada(String numero){
         System.out.println("Marcando al número:> "+numero);
     }
+
+    public void instalarAplicaciones(){
+
+    }
+    public void hacerVideoLlamada(){
+
+    }
+
+    @Override
+    public String toString() {
+        return "Smartphone{" +
+                "sistemaOperativo='" + sistemaOperativo + '\'' +
+                ", cams=" + Arrays.toString(cams) +
+                ", display=" + display +
+                ", modelo='" + modelo + '\'' +
+                ", marca='" + marca + '\'' +
+                ", precio=" + precio +
+                ", mAh=" + mAh +
+                '}';
+    }
 }
+
