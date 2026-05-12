@@ -1,12 +1,14 @@
 public class Celular {
+
+    // Atributos
     String modelo;
     String marca;
     double precio;
     int mAh;
 
+    // Constructores
     public Celular(){
     }
-
     public Celular(String modelo, String marca, double precio, int mAh) {
         this.modelo = modelo;
         this.marca = marca;
@@ -14,6 +16,7 @@ public class Celular {
         this.mAh = mAh;
     }
 
+    // Getters/Setters
     public String getModelo() {
         return modelo;
     }
@@ -39,6 +42,7 @@ public class Celular {
         this.mAh = mAh;
     }
 
+    // Metodo toString
     @Override
     public String toString() {
         return "Celular{" +
@@ -57,10 +61,10 @@ public class Celular {
     3. Métodos implementados (uso de interfaces)
      */
 
+    // Métodos
     public void mandarMensaje(String numero, String mensaje) {
-        System.out.println("Enviendo mensaje: [" + mensaje + "] al número: " + numero);
+        System.out.println("Enviando mensaje: [" + mensaje + "] al número: " + numero);
     }
-
     public void hacerLlamada(String numero) {
         System.out.println("Marcando al número: " + numero);
     }
