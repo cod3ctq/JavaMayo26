@@ -6,9 +6,7 @@ public class Celular {
     double precio;
     int mAh;
     //memoria, proc, display, puertos
-
-
-
+    
     public Celular(){
 
     }

@@ -1,4 +1,5 @@
-import java.awt.desktop.SystemEventListener;
+
+import java.util.Arrays;
 import java.util.Scanner;
 
 //Herencia permire reutilizar y/o absorber los miembros de
@@ -9,11 +10,14 @@ public class Smartphone extends Celular{
 
     String sistemaOperaivo;
     Camara[] cam; //atributo compuesto
+    Pantalla display; //atributo compuesto
 
-    public Smartphone(String modelo, String marca, double precio, int mAh, String sistemaOperaivo, Camara[] cam) {
+
+    public Smartphone(String modelo, String marca, double precio, int mAh, String sistemaOperaivo, Camara[] cam, Pantalla display) {
         super(modelo, marca, precio, mAh);
         this.sistemaOperaivo = sistemaOperaivo;
         this.cam = cam;
+        this.display = display;
     }
 
     public Smartphone(){}
@@ -27,16 +31,6 @@ public class Smartphone extends Celular{
     }
 
 
-    @Override
-    public String toString() {
-        return "Smartphone{" +
-                "sistemaOperaivo='" + sistemaOperaivo + '\'' +
-                ", modelo='" + modelo + '\'' +
-                ", marca='" + marca + '\'' +
-                ", precio=" + precio +
-                ", mAh=" + mAh +
-                '}';
-    }
     //Metodo de la forma 2 : Heredado y sobreescrito
     @Override //<<--- sobreescritura
     public void mandarMensaje(String numero, String  mensaje){
@@ -77,4 +71,25 @@ public class Smartphone extends Celular{
     }
 
 
+    public void instalarAplicaciones(){
+
+    }
+
+    public void hacerVideoLlamada(){
+
+    }
+
+
+    @Override
+    public String toString() {
+        return "Smartphone{" +
+                "sistemaOperaivo='" + sistemaOperaivo + '\'' +
+                ", cam=" + Arrays.toString(cam) +
+                ", display=" + display +
+                ", modelo='" + modelo + '\'' +
+                ", marca='" + marca + '\'' +
+                ", precio=" + precio +
+                ", mAh=" + mAh +
+                '}';
+    }
 }

@@ -35,7 +35,6 @@ public class Main {
         //Crear una clase modelando lo que ustedes quieran, incluir todos los miembros de clase
         //Crear 2 objetos de esa clase en la clase Main.
 
-
         Celular c = new Celular("1100","Nokia",1500.00, 950);
         c.mandarMensaje("23453453245","Hola Java desde un nokia");
         c.hacerLlamada("462452345");
@@ -44,20 +43,35 @@ public class Main {
         //Creacion del objeto compuesto
         Camara c1 = new Camara(5.00,1.3, 1,2.8,10,800);
         Camara[] cams = {c1};
+
         Camara c2 = new Camara(200.00,1.3, 1,2.8,100,800);
         Camara c3 = new Camara(12.00,1.3, 1,2.8,10,800);
         Camara c4 = new Camara(20.00,1.3, 1,2.8,10,800);
         Camara[] camSamsung = {c1,c2,c3,c4};
-        Smartphone sm = new Smartphone("Nokia N958GB", "Nokia", 8000,1200,"Symbian s60v3",cams);
+
+        Pantalla pant1 = new Pantalla("240x360",2.6,false,true,500,30);
+        Pantalla pant2 = new Pantalla("2K",6.8,true,true,1500,120);
 
         //Objeto compuesto : Necesita de otros objetos mas pequeños
-        Smartphone s2 = new Smartphone("S23Ultra", "Samsung", 26000,5000,"Android 17",camSamsung);
+        Smartphone sm = new Smartphone("Nokia N958GB", "Nokia", 8000,1200,"Symbian s60v3",cams,pant1);
+        Smartphone s2 = new Smartphone("S23Ultra", "Samsung", 26000,5000,"Android 17",camSamsung,pant2);
 
-
+        //Invocando metodos de la clase Padre desde una instancia de la clase hija
         sm.mandarMensaje("52345","Mensaje desde el smartphone");
         sm.hacerLlamada("25345234");
 
+        //Invocando metodos nativos de la clase hija (le pertencen solo a la clase hija)
+        sm.instalarAplicaciones();
+        sm.hacerVideoLlamada();
+
+        //Invocar metodos de la clase hija desde una instancia de la clase Padre
+        //(NO SE PUEDE)
+        //c.instalarAplicaciones();
+        //c.hacerVideoLlamada();
+
         System.out.println(sm);
+        System.out.println(s2);
+
 
     }
 }
