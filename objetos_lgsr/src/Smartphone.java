@@ -6,11 +6,13 @@ public class Smartphone extends Celular{
     //Permite especializar modelos
     String sistemaOperativo;
     Camara cam; // atributo compuesto
+    Pantalla display;//atributo compuesto
 
-    public Smartphone(String modelo, String marca, double precio, int mAH, String sistemaOperativo, Camara cam) {
+    public Smartphone(String modelo, String marca, double precio, int mAH, String sistemaOperativo, Camara cam, Pantalla display) {
         super(modelo, marca, precio, mAH);
         this.sistemaOperativo = sistemaOperativo;
         this.cam = cam;
+        this.display = display;
     }
 
     public Smartphone(){}
@@ -23,12 +25,6 @@ public class Smartphone extends Celular{
         this.sistemaOperativo = sistemaOperativo;
     }
 
-    @Override // <<<--- sobreescritura
-    public String toString() {
-        return "Smartphone{" +
-                "sistemaOperativo='" + sistemaOperativo + '\'' +
-                '}';
-    }
 
     //Metodo de la forma 2: Heredado y sobreescrito
     @Override
@@ -64,7 +60,31 @@ public class Smartphone extends Celular{
         }
         System.out.println("Enviando mensaje : [" + mensaje + "]; al numero:> " + numero);
     }
+
+    @Override
+    public String toString() {
+        return "Smartphone{" +
+                "sistemaOperativo='" + sistemaOperativo + '\'' +
+                ", cam=" + cam +
+                ", display=" + display +
+                ", modelo='" + modelo + '\'' +
+                ", marca='" + marca + '\'' +
+                ", precio=" + precio +
+                ", mAH=" + mAH +
+                '}';
+    }
+
+    public void instalarApp(){
+
+    }
+    public void hacerVideoLlamada(){
+
+    }
+
     public void hacerLlamada (String numero) {
         System.out.println("Marcando al numero:> " + numero);
+
+
+
     }
 }
