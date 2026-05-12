@@ -1,4 +1,5 @@
 public class Motocicleta {
+
     String marca;
     String modelo;
     int motor;

@@ -1,28 +1,39 @@
+import java.util.Arrays;
 import java.util.Scanner;
 
+// La herencia permite reutilizar y/o absorber los miembros de una Clase en otra y permite especializar modelos
 public class Smartphone extends Celular {
-    // La herencia permite reutilizar y/o absorber los miembros de una Clase en otra
-    // Permite especializar modelos
 
+    // Atributos
     String sistemaOperativo;
     Camara[] cam; // Atributo compuesto (de otro Objeto)
+    Pantalla display; // Atributo compuesto (de otro Objeto)
 
+    // Constructores
     public Smartphone() {
     }
-
-    public Smartphone(String modelo, String marca, double precio, int mAh, String sistemaOperativo, Camara[] cam) {
+    public Smartphone(String modelo, String marca, double precio, int mAh, String sistemaOperativo, Camara[] cam, Pantalla display) {
         super(modelo, marca, precio, mAh);
         this.sistemaOperativo = sistemaOperativo;
         this.cam = cam;
+        this.display = display;
     }
 
+    // Getters/Setters
     public String getSistemaOperativo() {
         return sistemaOperativo;
     }
     public void setSistemaOperativo(String sistemaOperativo) {
         this.sistemaOperativo = sistemaOperativo;
     }
+    public Camara[] getCam() {
+        return cam;
+    }
+    public void setCam(Camara[] cam) {
+        this.cam = cam;
+    }
 
+    // Métodos
     @Override // Metodo heredado y sobre escrito
     public void mandarMensaje(String numero, String mensaje) {
         Scanner scan = new Scanner(System.in);
@@ -35,24 +46,28 @@ public class Smartphone extends Celular {
         System.out.print("Ingresa una opcion: ");
         int seleccion = scan.nextInt();
         switch(seleccion) {
-            case 1 -> System.out.println("Mandando:[ " + mensaje + " ] por texto");
-            case 2 -> System.out.println("Mandando:[ " + mensaje + " ] por whatsapp");
-            case 3 -> System.out.println("Mandando:[ " + mensaje + " ] por telegram");
-            case 4 -> System.out.println("Mandando:[ " + mensaje + " ] por messenger");
-            case 5 -> System.out.println("Mandando:[ " + mensaje + " ] por instagram");
-            case 6 -> System.out.println("Mandando:[ " + mensaje + " ] por Voz");
+            case 1 -> System.out.println("Enviando: [ " + mensaje + " ] por texto");
+            case 2 -> System.out.println("Enviando: [ " + mensaje + " ] por whatsapp");
+            case 3 -> System.out.println("Enviando: [ " + mensaje + " ] por telegram");
+            case 4 -> System.out.println("Enviando: [ " + mensaje + " ] por messenger");
+            case 5 -> System.out.println("Enviando: [ " + mensaje + " ] por instagram");
+            case 6 -> System.out.println("Enviando: [ " + mensaje + " ] por Voz");
         }
     }
-
-    @Override
-    public void hacerLlamada(String numero) {
-        System.out.println("Marcando al número: " + numero);
+    public void instalarApps() {
+        System.out.println("Instalando Apps");
+    }
+    public void hacerVideollamada() {
+        System.out.println("Haciendo videollamada");
     }
 
+    // Metodo toString
     @Override
     public String toString() {
         return "Smartphone{" +
                 "sistemaOperativo='" + sistemaOperativo + '\'' +
+                ", cam=" + Arrays.toString(cam) +
+                ", display=" + display +
                 ", modelo='" + modelo + '\'' +
                 ", marca='" + marca + '\'' +
                 ", precio=" + precio +

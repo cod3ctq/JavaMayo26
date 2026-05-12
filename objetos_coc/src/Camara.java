@@ -1,5 +1,6 @@
 public class Camara {
 
+    // Atributos
     double resolucion;
     double velOpt;
     int camaras;
@@ -7,6 +8,9 @@ public class Camara {
     int zoom;
     int valorISO;
 
+    // Constructores
+    public Camara() {
+    }
     public Camara(double resolucion, double velOpt, int camaras, double aperturaOpt, int zoom, int valorISO) {
         this.resolucion = resolucion;
         this.velOpt = velOpt;
@@ -16,6 +20,7 @@ public class Camara {
         this.valorISO = valorISO;
     }
 
+    // Getters/Setters
     public double getResolucion() {
         return resolucion;
     }
@@ -53,6 +58,7 @@ public class Camara {
         this.valorISO = valorISO;
     }
 
+    // Metodo toString
     @Override
     public String toString() {
         return "Camara{" +
