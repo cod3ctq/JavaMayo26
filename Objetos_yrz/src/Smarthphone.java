@@ -1,21 +1,25 @@
 //Herenica permite reuitilizar y absorber los miembros de una
 // una clase a otra
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 // relacion "ES UN"
 // permite especializar modelos
     public class Smarthphone extends Celular {
     String sistemaOperativo;
-    Camara cam;//atributo compuesto
+    Camara[] cam;//atributo compuesto
+    Pantalla display;//atributo compuesto
 
     public Smarthphone() {
 
     }
 
-    public Smarthphone(String modelo, String marca, double precio, int mAh, String sistemaOperativo) {
+    public Smarthphone(String modelo, String marca, double precio, int mAh, String sistemaOperativo, Camara[] cam, Pantalla display) {
         super(modelo, marca, precio, mAh);
         this.sistemaOperativo = sistemaOperativo;
+        this.cam = cam;
+        this.display = display;
     }
 
     public String getSistemaOperativo() {
@@ -28,15 +32,18 @@ import java.util.Scanner;
 
     @Override
     public String toString() {
-        return "Smartphone{" +
-                "modelo='" + modelo + '\'' +
+        return "Smarthphone{" +
+                "sistemaOperativo='" + sistemaOperativo + '\'' +
+                ", cam=" + Arrays.toString(cam) +
+                ", display=" + display +
+                ", modelo='" + modelo + '\'' +
                 ", marca='" + marca + '\'' +
                 ", precio=" + precio +
                 ", mAh=" + mAh +
-                ", sistemaOperativo='" + sistemaOperativo + '\'' +
                 '}';
     }
-@Override
+
+    @Override
 //significa sobreescritura
     public void mandarMensaje(String numero, String mensaje){
         Scanner scan=new Scanner(System.in);
@@ -75,5 +82,11 @@ import java.util.Scanner;
 
     public void hacerLlamada(String numero){
         System.out.println("Marcando al numero:"+numero);
+    }
+    public void instalarAplicaciones(){
+
+    }
+    public void hacerVideollamada(){
+
     }
 }

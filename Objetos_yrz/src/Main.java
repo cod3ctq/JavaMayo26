@@ -48,8 +48,27 @@ c.mandarMensaje("23234594","Hola que haces");
  c.hacerLlamada("24415563");
     //System.out.println(c);
     Camara c1=new Camara(12,2.8,3,2.8,8,800);
+    Camara[] cams={c1};
+    Camara c2 = new Camara(200.00,1.3,1,2.8,100,800);
+    Camara c3 = new Camara(12.00,1.3,1,2.8,10,800);
+    Camara c4 = new Camara(20.00,1.3,1,2.8,10,800);
 
-    Smarthphone sm=new Smarthphone("s25","Samsung",25000.00,3000,"Android");
+    Camara[] camSamsung={c1,c2,c3,c4};
+
+    Pantalla pant1=new Pantalla("240x360",2.6,false,true,500,30);
+    Smarthphone sm=new Smarthphone("s25","Samsung",25000.00,3000,"Android",cams,pant1);
+
+    //invocamndo metodos nativos de la clase hija(le pertenecen solo a la clase hija)
+    sm.instalarAplicaciones();;
+    sm.hacerVideollamada();
+
+    //invocar metodos de la clase hija desde una instancia de la clase padre
+    //c.instalasAplicaciones();
+    //c.hacerVideollamada();
+    //NO SE PUEDE REALIZAR YA QUE NO PUEDES HEREDAR METODOS DE LA CLASE HIJA A LA CLASE PADRE
+
+
+    //invocando metodos de la clase padre desde una instancia de la clase hija
   sm.mandarMensaje("3030303","Buen dia");
   sm.hacerLlamada("230303030");
     System.out.println(sm);
