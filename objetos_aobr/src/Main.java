@@ -64,15 +64,25 @@ public class Main {
         Camara c4 = new Camara(20.00,1.3,1,2.8,10,800);
         Camara[] camSamsung = {c1,c2,c3,c4};
 
+        Pantalla pant1 = new Pantalla("240x360",2.6,false,true,500,30);
+        Pantalla pant2 = new Pantalla("2k",6.8,true,true,1500,120);
 
-        Smartphone sm = new Smartphone("Nokia n95","nokia",8000.00,1200,"Symbian",cams);
+
+        Smartphone sm = new Smartphone("Nokia n95","nokia",8000.00,1200,"Symbian",cams, pant1);
         //Objeto compuesto: necesita de otros objetos mas pequenios
-        Smartphone s2 = new Smartphone("S23 ultra","samsung",25000.00,5000,"Android",camSamsung);
+        Smartphone s2 = new Smartphone("S23 ultra","samsung",25000.00,5000,"Android",camSamsung, pant2);
 
+
+        //Invocando metodos de la clase padre desde una instancia de la clase hija
         sm.mandarMensaje("318041","Mensaje desde el Smarthphone");
         sm.hacerLlamada("31804");
 
         System.out.println(sm);
+        System.out.println(s2);
+
+        //Estoy invocando metodos nativos de la clase hija (le pertenecen solo a la clase hija)
+        sm.instalarAplicaciones();
+        sm.hacerVideollamada();
 
     }
 }
