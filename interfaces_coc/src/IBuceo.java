@@ -1,0 +1,9 @@
+public interface IBuceo {
+
+    final static int PROFUNDIDAD_MINIMA = 40;
+
+    void nadar();
+    void controlarRespiracion();
+    void descompresionar();
+
+}
