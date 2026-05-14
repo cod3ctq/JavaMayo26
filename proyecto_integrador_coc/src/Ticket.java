@@ -1,0 +1,72 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+public class Ticket {
+    // Atributos
+    private String direccion;
+    private int folioOperacion;
+    private LocalDateTime fechaHora; // Se introdujo a partir de Java8
+    private double montoOperacion;
+    private String tipoOperacion;
+    private String cuenta; // Sólo los últimos 4 dígitos
+    // Constructores
+    public Ticket(){
+    }
+    public Ticket(String direccion, int folioOperacion, LocalDateTime fechaHora, double montoOperacion, String tipoOperacion, String cuenta) {
+        this.direccion = direccion;
+        this.folioOperacion = folioOperacion;
+        this.fechaHora = fechaHora;
+        this.montoOperacion = montoOperacion;
+        this.tipoOperacion = tipoOperacion;
+        this.cuenta = cuenta;
+    }
+    // Getters/Setters
+    public String getDireccion() {
+        return direccion;
+    }
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+    public int getFolioOperacion() {
+        return folioOperacion;
+    }
+    public void setFolioOperacion(int folioOperacion) {
+        this.folioOperacion = folioOperacion;
+    }
+    public LocalDateTime getFechaHora() {
+        return fechaHora;
+    }
+    public void setFechaHora(LocalDateTime fechaHora) {
+        this.fechaHora = fechaHora;
+    }
+    public double getMontoOperacion() {
+        return montoOperacion;
+    }
+    public void setMontoOperacion(double montoOperacion) {
+        this.montoOperacion = montoOperacion;
+    }
+    public String getTipoOperacion() {
+        return tipoOperacion;
+    }
+    public void setTipoOperacion(String tipoOperacion) {
+        this.tipoOperacion = tipoOperacion;
+    }
+    public String getCuenta() {
+        return cuenta;
+    }
+    public void setCuenta(String cuenta) {
+        this.cuenta = cuenta;
+    }
+    // Metodo toString
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "direccion='" + direccion + '\'' +
+                ", folioOperacion=" + folioOperacion +
+                ", fechaHora=" + fechaHora +
+                ", montoOperacion=" + montoOperacion +
+                ", tipoOperacion='" + tipoOperacion + '\'' +
+                ", cuenta='" + cuenta + '\'' +
+                '}';
+    }
+}
