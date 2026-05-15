@@ -1,0 +1,84 @@
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+
+//    Atm uno = new Atm("Av juarez 23", "e102");
+//
+//    uno.consultarSaldo("", "");
+CajeroBasico cb= new CajeroBasico();
+cb.setDireccion("Av hidalgo");
+        cb.setFolio("KS-23");
+
+        Practicaja pc=new Practicaja();
+        pc.setDireccion("Av hidalgo 121");
+        pc.setFolio("JSJDO");
+
+        //no es posible acceder a un miembro privado aunque haya sido heredado
+        //solo se hereda lo public y protected
+        //private se hereda
+        //cb.cargarCuentas();
+
+        imprimeLogo();
+
+
+       //System.out.println(cb.retirar("4532987612457789",500,"7750"));
+        Object[] resultados=cb.retirar("4532987612457789",500,"7750");
+        Object[] resultados2=cb.retirar("4532987612457789",500,"7750");
+        // SI MANDAMOS A IMPRIMIR SOLAMENTE EL OBJETO NOS DARA LA DIRECCION DE MEMORIA DE ESE OBJETO
+
+    //ES NECESARIO CASTEAR LO QUE HAY DENTRO DEL OBJETO, PARA QUE ASI PODAMOS CONOCER LO QUE HAY DENTRO DEL OBJETO
+        //EL CASTEO TIPO DOUBLE QUEDARIA ASI PARA EL PRIMER ELEMENTO (POSICION 0)
+        double efectivo=(double) resultados[0];
+
+        // casteo = una conversion directa
+
+        //EL CASTEO DEL 2DO ELEMENTO TIPO OBJECT SERIA UN ARRAY CON LA INFORMACIÓN DEL TICKET
+        // YA LLEVA SU ARREGLO CON SUS ATRIBUTOS DEFINIDOS DEBIDO AL METODO TO STRING QUE VIVE DENTRO DE LA CLASE TICKET
+        Ticket ticket=(Ticket)resultados[1];
+
+        System.out.println(efectivo);
+        System.out.println(ticket);
+
+        double efectivo1=(double) resultados2[0];
+
+        // casteo = una conversion directa
+
+        //EL CASTEO DEL 2DO ELEMENTO TIPO OBJECT SERIA UN ARRAY CON LA INFORMACIÓN DEL TICKET
+        // YA LLEVA SU ARREGLO CON SUS ATRIBUTOS DEFINIDOS DEBIDO AL METODO TO STRING QUE VIVE DENTRO DE LA CLASE TICKET
+        Ticket ticket1=(Ticket)resultados2[1];
+
+        System.out.println(efectivo1);
+        System.out.println(ticket1);
+
+
+        Ticket t1=pc.depositar("5201456789341123",3500,"8450");
+        System.out.println(">>Deposito : "+t1);
+        pc.consultarSaldo("5201456789341123","8450");
+    }
+
+    static void imprimeLogo() throws Exception {
+        String rutaImagen = "C:\\Users\\Yair\\Downloads\\Telegram Desktop\\photo_2026-05-14_08-21-53.jpg";
+        BufferedImage imagen = ImageIO.read(new File(rutaImagen));
+        int anchoFinal = 80;
+        int altoFinal = (imagen.getHeight() * 35) / imagen.getWidth();
+        String caracteres = "@%#*+=-:. ";
+        for (int y = 0; y < altoFinal; y++) {
+            StringBuilder linea = new StringBuilder();
+            for (int x = 0; x < anchoFinal; x++) {
+                int pixelX = x * imagen.getWidth() / anchoFinal;
+                int pixelY = y * imagen.getHeight() / altoFinal;
+                int rgb = imagen.getRGB(pixelX, pixelY);
+                int rojo = (rgb >> 16) & 0xff;
+                int verde = (rgb >> 8) & 0xff;
+                int azul = rgb & 0xff;
+                int gris = (rojo + verde + azul) / 3;
+                int indice = gris * (caracteres.length() - 1) / 255;
+                linea.append(caracteres.charAt(indice));
+            }
+            System.out.println(linea);
+        }
+    }
+}

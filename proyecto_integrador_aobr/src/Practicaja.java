@@ -1,0 +1,41 @@
+import java.time.LocalDate;
+
+public class Practicaja extends Atm implements IOperacionesBasicas, IOperacionesAvanzadas{
+    @Override
+    public void cobrarRetiroSinTarjeta() {
+
+    }
+
+    @Override
+    public Ticket depositar(String numTarjeta, double monto, String nip) {
+        Ticket ticket = null;
+        Cuenta cuenta = this.buscarCuenta(numTarjeta,nip);
+        if(!(cuenta!=null)){
+            System.out.println("Cuenta inexistente para depositar");
+        }else if(monto>Constantes.CANTIDAD_MAX_DEPOSITO){
+            System.out.println("Monto maximo superado. Deposite en ventanilla");
+        }else if((cuenta.getSaldo()+monto)>Constantes.SALDO_MAX){
+            System.out.println("Deposito no disponible, saldo maximo superado");
+        }else{
+            //DEPOSITO
+            cuenta.setSaldo(cuenta.getSaldo()+monto);
+            ticket = new Ticket(this.getDireccion(),folioOperacion++, LocalDate.now(),monto,"DEPOSITO", "*******"+cuenta.getNumCuenta().substring(8));
+
+
+        }
+
+
+
+        return ticket;
+    }
+
+    @Override
+    public Object[] retirar(String numTarjeta, double monto, String nip) {
+        return new Object[0];
+    }
+
+    @Override
+    public Ticket pagarServicio(String convenio, String referencia) {
+        return null;
+    }
+}
