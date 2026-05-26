@@ -136,85 +136,60 @@
 //}
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
-public class CajeroBasico extends Atm implements IOperacionesBasicas {
+public class CajeroBasico extends Atm implements IOperacionesBasicas, IOperacionesAvanzadas {
 
+
+    Scanner scan = new Scanner(System.in);
     @Override
-    public void cobrarRetirosSinTarjeta() {
+    public Ticket depositar(String numTarjeta, double monto, String nip) {
+        Ticket ticket = null;
 
-    }
-
-
-    @Override
-    public Object[] retirar(String numTarjeta, double monto, String nip)
-    throws MaxDailyWithdrawalsExceededException, InvalidQuantityException, InsufficientBalanceException,
-            UnderMinimunException{
-        //Double retiradoHoy;
-        Object[] datos = new Object[2];
         try{
             CuentaDTO cuenta = this.buscarCuenta(numTarjeta, nip);
-            //colocar aqui todo el codigo que procesa el retiro,
-            //asumiemndo que ya no necesito Validar la existencia de la cuenta
-            //Buscar si existe ya algun retiro registrado, obtiene cuanto se ha retirado en este dia, si no que nulo
-            //********************* Validar que margen disponible sea< MONTO A RETIRAR.
-            if (getCacheRetirosDiarios().containsKey(cuenta.getNumCuenta()+LocalDate.now()) &&
-                    getCacheRetirosDiarios().get(cuenta.getNumCuenta()+LocalDate.now())>= Constantes.MAX_RETIRO_DIARIO){ //si el monton retirado supera el maximo.
-                //Registro el retiro y guardo el monto que acabo de retirar
-                getCacheRetirosDiarios().put(cuenta.getNumCuenta()+LocalDate.now(), monto);
-               // System.out.println("Retiro no disponible, se ha superado, la cantidad diaria de retiro permitida");
-                throw new MaxDailyWithdrawalsExceededException(Constantes.MAX_DAILY_WITHDRAWAL_EXCEEDED);
-            }else if(! (monto%100==0) ){//cantidad multiplo de 100
-               throw new InvalidQuantityException(Constantes.INVALID_QUANTITY);
-               // System.out.println("cantidad invalida, debe ser multiplo de 100");
-            } else if (cuenta.getSaldo()<monto){//Verificar si me alcanza
-//                System.out.println("Saldo insuficiente");
-                throw new InsufficientBalanceException(Constantes.INSUFFICENT_BALANCE);
-            } else if ( (cuenta.getSaldo() - monto) < cuenta.getSaldoMin()) { //Validar que si retiro, quede por encima del minimo
-//                System.out.println("Retiro no disponible. Excede el minimo permitido");
-                throw new UnderMinimunException(Constantes.UNDER_MINIMUN);
-            }else { //retirar
-
-                //calculo el indice del objeto original  dentro de la lista
+            if (monto<=0){
+                throw new InvalidQuantityException(Constantes.ONLY_POSITIVE);
+            } else if (monto > Constantes.CANTIDAD_MAX_DEPOSITO) {
+                throw  new MaximumDepositQuantityExceededException(Constantes.MAX_QUANTITY_DEPOSIT);
+            } else if ((cuenta.getSaldo() + monto) > cuenta.getSaldoMax()) {
+                throw  new OverMaximumDepositException(Constantes.OVER_MAXIMUM);
+            }else{
+                //Calculo en indice del objeto original dentro de la lista
                 int index = this.getCacheCuentas().indexOf(cuenta);
-                //retirar
-                double nuevoSaldo = cuenta.getSaldo()-monto;
-                cuenta.setSaldo((nuevoSaldo));
-                //repmlazo el objeto con el saldo actualizado en la posicion donde estaba en un inicio
+                //calculo el nuevo saldo
+                double nuevoSaldo = cuenta.getSaldo() + monto;
+                //altera el saldo en el objeto del cache
+                cuenta.setSaldo( nuevoSaldo);
+                //reemplaza el objeto con el nuevo saldo, en lugar del objeto original
                 this.getCacheCuentas().set(index, cuenta);
-
-                //determinar si es su primer retiro o si ya existe registro de retiros de esta cuenta en este dia.
-                if (getCacheRetirosDiarios().containsKey(cuenta.getNumCuenta()+LocalDate.now())){
-
-                    double acomulado =getCacheRetirosDiarios().get(cuenta.getNumCuenta()+LocalDate.now());
-
-                    getCacheRetirosDiarios().put(cuenta.getNumCuenta()+LocalDate.now(),acomulado+monto);
-
-                } else {
-                    getCacheRetirosDiarios().put(cuenta.getNumCuenta()+LocalDate.now(),monto);
-
-                    //Acuatlizar el saldo de la cuenta en db
-                    getCuentadao().actualizarSaldoCuenta(cuenta.getNumCuenta(),nuevoSaldo);
-
-                    //registrar el movimiento
-                    getMovimientodao().registrarMocimiento(cuenta.getCuentaId(),"RETIRO",monto);
-                }
+                //actualizar el saldo de la cuenta en db
+                getCuentadao().actualizarSaldoCuenta(cuenta.getNumCuenta(),nuevoSaldo);
+                //registrar el movimiento
+                getMovimientodao().registrarMocimiento(cuenta.getCuentaId(), "DEPOSITO", monto);
 
 
-                Ticket t = new Ticket(this.getDireccion(),
+                ticket = new Ticket(this.getDireccion(),
                         folioOperacion++,
                         LocalDateTime.now(),
-                        monto, "RETIRO",
+                        monto,
+                        "DEPOSITO",
                         "*******"+cuenta.getNumCuenta().substring(8));
-                datos[0] = monto;
-                datos[1] = t;
+
             }
-        } catch (AccountNotFoundException ex){
-
-            System.out.println(ex.getMessage());//imprime solo el mensaje de la excepcion
-
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
 
-        return datos;
+
+        return ticket;
+    }
+
+    @Override
+    public Object[] retirar(String numTarjeta, double monto, String nip) {
+        return new Object[0];
+//        throws MaxDailyWithdrawalsExceededException,InvalidQuantityException,
+//                InsufficientBalanceException {...}
     }
 
     @Override
@@ -223,7 +198,52 @@ public class CajeroBasico extends Atm implements IOperacionesBasicas {
     }
 
     @Override
-    public void cobrarRetiroSinTarjeta() {
+    public Ticket cobrarRetiroSinTarjeta() {
+        Ticket ticket = null;
+        System.out.println("CAPTURA LA REFERENCIA: ");
+        String ref = scan.nextLine();
 
+        boolean existe = false;
+        String llave = "";
+        for(String key:cacheRst.keySet()){
+            if(key.contains(ref)){
+                existe = true;
+                llave=key;
+                break;
+            }
+        }
+
+        //---la ref existe, ahora, lanzar mensaje,
+        if (!existe){
+throw new InvalidNumberReferenceException(Constantes.INVALID_NUMBER_REFERENCE);
+        } else if(cacheRetirosCobrados.contains(ref)){    //validar si ya fue cobrado con el set cacheRetirosCobrados
+throw new WhithdrawalAlreadyCollectedException(Constantes.WHITADRAWAL_ALREADY_COLLECTED);
+        } else {
+
+            double nuevoSaldo = getCuentadao().getSaldoCuenta(llave.split(":")[0])-cacheRst.get(llave);
+            getCuentadao().actualizarSaldoCuenta(llave.split(":")[0],nuevoSaldo);
+
+            cacheRetirosCobrados.add(ref);//añade el retiro al set cacheRetirosCobrados
+
+            System.out.println("IMPRIMIR TICKEY ??");
+            System.out.println("Presiona 1 (si), 2 (no)");
+            int seleccion = scan.nextInt();
+
+            if(seleccion != 1){
+                System.out.println("Operacion finalizada");
+            }
+            else {
+                ticket = new Ticket(this.getDireccion(),
+                        ++folioOperacion,
+                        LocalDateTime.now(),
+                        cacheRst.get(llave),
+                        "RETIRO",
+                        llave.split(":")[0]);
+            }
+
+        }
+
+        return ticket;
     }
 }
+

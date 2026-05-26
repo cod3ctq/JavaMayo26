@@ -14,8 +14,8 @@ public class MovimientoDAO {
 
         try {
 
-            Class.forName("oracle.jdbc.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "db1", "admin");
+            con = ConexionOracle.getInstance().getCon();
+            System.out.println("LLAMAR A LA BASE Y: "+con);
             ps = con.prepareStatement(query);
             // estas operacion son para acompletar el query
             //aqui se asigna con el primer marcador de posicion, y se acuatliza nuevo saldo

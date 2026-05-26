@@ -1,21 +1,22 @@
-import com.sun.jdi.event.ExceptionEvent;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class Atm {
+
     private String direccion;
     private String folio;
     public static int folioOperacion = 0; //contador goblal de operaciones
     private Cuenta[] database;
     public static Map<String, Double> cacheRetirosDiarios = new HashMap<String, Double>();
     private List<CuentaDTO> cacheCuentas;
-//    //Objetos JDBC temporales
+    public static Map<String,Double> cacheRst=new HashMap<String,Double>(); // Retiro sin tarjeta por cobrar
+    public static Set<String> cacheRetirosCobrados = new HashSet<String>();//    Referencias de retiros ya cobrados
+
+    // Objetos JDBC temporales
 //    Connection con = null;
 //    PreparedStatement ps = null;
 //    ResultSet rs = null;
@@ -23,6 +24,7 @@ public abstract class Atm {
     //se inyecta en esta clase, aunque cualquier otra tambien puede usarla
     private CuentaDAO cuentadao = new CuentaDAO();
     private MovimientoDAO movimientodao= new MovimientoDAO();
+
     public Atm() {
 
         //    this.database = cargarCuentas();
@@ -98,6 +100,22 @@ public abstract class Atm {
         this.movimientodao = movimientodao;
     }
 
+    public static Set<String> getCacheRetirosCobrados() {
+        return cacheRetirosCobrados;
+    }
+
+    public static void setCacheRetirosCobrados(Set<String> cacheRetirosCobrados) {
+        Atm.cacheRetirosCobrados = cacheRetirosCobrados;
+    }
+
+    public static Map<String, Double> getCacheRst() {
+        return cacheRst;
+    }
+
+    public static void setCacheRst(Map<String, Double> cacheRst) {
+        Atm.cacheRst = cacheRst;
+    }
+
     @Override
     public String toString() {
         return "Atm{" +
@@ -138,6 +156,8 @@ public abstract class Atm {
         }
     }
 
+
+
     private Cuenta[] cargarCuentas() {
         File file = new File("C:\\Users\\Yair\\Desktop\\cuentas.txt");
         String linea; //informacion completa, junta
@@ -164,11 +184,16 @@ public abstract class Atm {
 
 
     public void gerarRetiroSinTarjeta() {
+// Metodo hecho solo para automatizar la generacion de los retiros asociandolos a una cuenta
+        // leida desde db. solo para simular los datos
+        //Generar 5 retiros sin tarjeta con valores aleatorios
+        for(CuentaDTO dto:getCacheCuentas()){
+            cacheRst.put(dto.getNumCuenta()+":"+Helper.generarReferencia()+":"+Helper.generarClave(),Double.parseDouble(Helper.generarMonto()));
+        }
     }
 
-    public abstract void cobrarRetirosSinTarjeta();
 
-    public abstract void cobrarRetiroSinTarjeta();
+    public abstract Ticket cobrarRetiroSinTarjeta();
 
     public void inspeccionarCacheRetirosDiario() {
         for (String registro : cacheRetirosDiarios.keySet()) {

@@ -26,8 +26,8 @@ public class CuentaDAO {
         List<CuentaDTO> dtos = new ArrayList<CuentaDTO>();
         CuentaDTO dto = null;
         try {
-            Class.forName("oracle.jdbc.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "db1", "admin");
+            con = ConexionOracle.getInstance().getCon();//Apunta a la unica conexion a la base de datos
+            System.out.println("<<<<<LLAMADA A LA BASE 1: "+con);
             ps = con.prepareStatement(query);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -52,9 +52,8 @@ public class CuentaDAO {
     public void actualizarSaldoCuenta(String numCuenta, double nuevoSaldo) {
         String query = "UPDATE CUENTAS SET SALDO = ? WHERE NUM_CUENTA = ?";
         try {
-
-            Class.forName("oracle.jdbc.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "db1", "admin");
+            con = ConexionOracle.getInstance().getCon();
+            System.out.println(">>>>>>LLAMADA A LA BASE X: "+con);
             ps = con.prepareStatement(query);
             // estas operacion son para acompletar el query
             //aqui se asigna con el primer marcador de posicion, y se acuatliza nuevo saldo
@@ -72,5 +71,21 @@ public class CuentaDAO {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    public double getSaldoCuenta(String numCuenta){
+        String query="SELECT SALDO FROM CUENTAS WHERE NUM_CUENTA='"+numCuenta+"'";
+        double saldo=0.0;
+        try{
+            con=ConexionOracle.getInstance().getCon();//apunta a la unica conexion a la db
+            System.out.println(">>>>>>> LLAMADA A LA BASE X: "+con);
+            ps= con.prepareStatement(query);
+            rs=ps.executeQuery();
+
+            while (rs.next()){
+                saldo=rs.getDouble("SALDO");
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
+        } return saldo;
     }
 }
