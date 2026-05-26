@@ -1,11 +1,66 @@
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 public class CajeroBasico extends Atm implements iOperacionesBasicas {
 
     @Override
-    public void cobrarRetiroSinTarjeta() {
+    public Ticket cobrarRetiroSinTarjeta() throws InvalidCardNumberException, WithdrawalAlreadyDoneException {
 
+        Ticket ticket = null;
+        Scanner scan = new Scanner(System.in);
+        System.out.println("CAPTURA LA REFERENCIA");
+        String ref = scan.nextLine();
+        String clave = scan.nextLine();
+        //validar que exista la referencia
+        //buscar que exista la referencia
+        boolean existe = false;
+        String llave="";
+        for(String key:cacheRst.keySet()){
+            if(key.contains(ref) && key.contains(clave)){
+                existe = true;
+                llave = key;//Extrae la (numCuenta:ref:clave) para usarla despues
+                break;
+            }
+        }
+
+        //la referencia existe, ahora ver si ya fue cobrada
+        if(!existe){
+            throw new InvalidCardNumberException(Constantes.INVALID_CARDLESS_WITHDRAWAL);
+        }else if(cacheRetirosCobrados.contains(ref)){//si ya fue cobrado
+            throw new WithdrawalAlreadyDoneException(Constantes.CARDLESS_WITHDRAWAL_ALREADY_DONE);
+
+        }else{
+            double nuevoSaldo = getCuentadao().getSaldoCuenta(llave.split(":")[0])- cacheRst.get(llave);
+            getCuentadao().actualizarSaldoCuenta(llave.split(":")[0],nuevoSaldo);
+            cacheRetirosCobrados.add(ref);//anade el retiro al conjunto de los ya cobrados
+
+            System.out.println("IMPRIMIR TICKET ??");
+            System.out.println("Presiona 1 (SI), 2 (NO)");
+            int seleccion= scan.nextInt();
+
+            if(seleccion!=1){
+                System.out.println("Operacion finalizada");
+                return null;
+            }else{
+                ticket= new Ticket(this.getDireccion(),
+                        folioOperacion++,
+                        LocalDateTime.now(),
+                        cacheRst.get(llave),
+                        "RETIRO",
+                        llave.split(":")[0]);
+            }
+
+
+        }
+
+
+        //Validar si ya fue cobrada
+            //si - lanzar mensaje
+            //no - proceder al cobro
+            //registrar el cobro
+
+        return ticket;
     }
 
     @Override
@@ -27,7 +82,7 @@ public class CajeroBasico extends Atm implements iOperacionesBasicas {
                 //System.out.println("Retiro no disponible, se ha superado la cantidad maxima permitida");
                 throw new MaxDailyWithdrawalsExceededException(Constantes.MAX_DAILY_WITHDRAWAL_EXCEEDED);
 
-            } else if (!(monto % 100 == 0)) {//cantidad muitplo de 100
+            } else if (!(monto % 100 == 0) || monto>=0) {//cantidad muitplo de 100
                 //System.out.println("Cantidad invalida, debe ser multiplo de 100");
                 throw new InvalidQuantityException(Constantes.INVALID_QUANTITY);
             } else if (cuenta.getSaldo() < monto) {//Verificar si me alcanza

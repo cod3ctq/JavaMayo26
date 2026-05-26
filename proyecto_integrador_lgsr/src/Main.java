@@ -2,6 +2,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.sql.Date;
+import java.sql.SQLOutput;
+import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -23,43 +25,59 @@ public class Main {
         //cb.cargarCuentas();
         imprimeLogo();
 //CICLO TEMPORAL SOLO PARA PROBAR EL METODO QUE LEE LAS CUENTAS DESDE LA BASE DE DATOS
-        for (CuentaDTO dto : cb.getCacheCuentas()) {
-            System.out.println(dto);
+//        for (CuentaDTO dto : cb.getCacheCuentas()) {
+//            System.out.println(dto);
+//        }
+//
+        // otro ciclo temporal, solo para ver que retiros sin tarjeta existen publicados
+        cb.generarRetiroSinTarjeta(); //invoca al metodo que genera los retiros
+        for(String ret : cb.getCacheRst().keySet()){
+            System.out.println(ret + " - "+cb.getCacheRst().get(ret));
+
+        }
+        Scanner scan = new Scanner(System.in);
+        int c = 1;
+        while(c>0) {
+            Ticket rstc = pc.cobrarRetiroSinTarjeta();
+            System.out.println(rstc);
+            System.out.println("CONTINUAR??");
+            System.out.println("1-SI, 0 - NO");
+            c = scan.nextInt();
         }
         // ModuloAtencion ma= new ModuloAtencion();
         //ma.mostrarClientes();
         //Cliente nuevo = new Cliente("Sara","Torres","Galicia","Direccion de sara","0987654321","IUEREHIU    DFS","SR43876837",
         // new Date(1980,04,12),"1","sara@gmailcrosoft.com");
         //ma.registrarCliente(nuevo);
-        System.out.println(">>>>> SALDO INICIAL DE LA CUENTA >>>>> : ");
-        cb.consultarSaldo("5578123412340004", "4567");
+//        System.out.println(">>>>> SALDO INICIAL DE LA CUENTA >>>>> : ");
+//        cb.consultarSaldo("5578123412340004", "4567");
 //        cb.inspeccionarCacheRetirosDiarios();
-//
-//        Object[] resultados = cb.retirar("5578123412340004", 5000,"4567");
+////
+//        Object[] resultados = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 1 $$$ : "+(double) resultados[0]);
 //        System.out.println((Ticket) resultados[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 ////
-//        Object[] resultados2 = cb.retirar("5578123412340004", 5000,"4567");
+//        Object[] resultados2 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 2 $$$ : "+(double) resultados2[0]);
 //        System.out.println((Ticket) resultados2[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 //
-//        Object[] resultados3 = cb.retirar("5478123498761234", 2000,"4821");
+//        Object[] resultados3 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 3 $$$ : "+(double) resultados3[0]);
 //        System.out.println((Ticket) resultados3[1]);
-//        cb.consultarSaldo("5478123498761234","4821");
+//        cb.consultarSaldo("5578123412340004","4567");
 //
-//        Object[] resultados4 = cb.retirar("5478123498761234", 100,"4821");
+//        Object[] resultados4 = cb.retirar("5578123412340004", 100,"4567");
 //        System.out.println("RETIRO 4 $$$ : "+(double) resultados4[0]);
 //        System.out.println((Ticket) resultados4[1]);
-//        cb.consultarSaldo("5478123498761234","4821");
-
-        Ticket t1 = pc.depositar("5578123412340004", 15000, "4567");
-        System.out.println(">>>>Deposito : " + t1);
-        pc.consultarSaldo("5578123412340004", "4567");
+//        cb.consultarSaldo("5578123412340004","4567");
+//
+//        Ticket t1 = pc.depositar("5578123412340004", 15000, "4567");
+//        System.out.println(">>>>Deposito : " + t1);
+//        pc.consultarSaldo("5578123412340004", "4567");
     }
 
     static void imprimeLogo() throws Exception {
