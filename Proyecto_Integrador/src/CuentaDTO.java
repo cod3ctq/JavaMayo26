@@ -6,7 +6,7 @@ public class CuentaDTO {
 
     private String numTarjeta;
     private String nip;
-    private int cuentaDTO;
+    private int cuentaDTO; //Aqui te equivocaste, realmente es cuentID
     private String numCuenta;
     private double saldo;
     private double saldoMin;

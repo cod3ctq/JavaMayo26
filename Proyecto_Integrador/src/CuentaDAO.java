@@ -11,6 +11,7 @@ public class CuentaDAO {
     private PreparedStatement ps = null;
     private ResultSet rs = null;
 
+    //Carga el cache de la
     public List<CuentaDTO> leerCuentas() {
 
         String query =
@@ -25,14 +26,8 @@ public class CuentaDAO {
         List<CuentaDTO> dtos = new ArrayList<>();
 
         try {
-            Class.forName("oracle.jdbc.OracleDriver");
-
-            con = DriverManager.getConnection(
-                    "jdbc:oracle:thin:@localhost:1521:xe",
-                    "db1",
-                    "admin"
-            );
-
+            con = ConexionOracle.getInstance().getCon();//Apunta a la unica conexion a la base de datos
+            System.out.println(">>>>>>>>>>> LLAMADA A LA BASE 1:"+con);
             ps = con.prepareStatement(query);
             rs = ps.executeQuery();
 
@@ -64,14 +59,8 @@ public class CuentaDAO {
         String query = "UPDATE CUENTAS SET SALDO = ? WHERE NUM_CUENTA = ?";
 
         try {
-            Class.forName("oracle.jdbc.OracleDriver");
-
-            con = DriverManager.getConnection(
-                    "jdbc:oracle:thin:@localhost:1521:xe",
-                    "db1",
-                    "admin"
-            );
-
+            con = ConexionOracle.getInstance().getCon();//Apunta a la unica conexion a la base de datos
+            System.out.println(">>>>>>>>>>> LLAMADA A LA BASE X:"+con);;
             ps = con.prepareStatement(query);
             ps.setDouble(1, nuevoSaldo);
             ps.setString(2, numCuenta);
@@ -88,4 +77,23 @@ public class CuentaDAO {
             ex.printStackTrace();
         }
     }
+
+    public double getSaldoCuenta(String numCuenta){
+        String query = "SELECT SALDO FROM CUENTAS WHERE NUM_CUENTA='"+numCuenta+"'"; //'' porque dentro de sql el texto va dentro de comillas simples y estamos concatenando
+        double saldo = 0.0;
+        try {
+            con = ConexionOracle.getInstance().getCon();//Apunta a la unica conexion a la base de datos
+            System.out.println(">>>>>>>>>>> LLAMADA A LA BASE X:"+con);;
+            ps = con.prepareStatement(query);
+            rs = ps.executeQuery();
+
+            while(rs.next()){
+                saldo = rs.getDouble("SALDO");
+            }
+        }catch(Exception ex){
+
+        }
+        return saldo;
+
+}
 }
