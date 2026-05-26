@@ -3,10 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class Atm {
 
@@ -17,6 +14,8 @@ public abstract class Atm {
     private List<CuentaDTO> cacheCuentas; //objeto que contiene las cuentas tal y ciomo vienen desde la db
     //Cache de retiros diarios
     public static Map<String, Double> cacheRetirosDiarios = new HashMap<String,Double>();
+    public static Map<String, Double> cacheRst = new HashMap<String,Double>();//retiros sin tarjeta por cobrar
+    public static Set<String> cacheRetirosCobrados = new HashSet<String>(); //Referencias de rst ya cobrados
 
 
     //INYECCION DE DEPENDENCIAS -MANUAL
@@ -101,6 +100,22 @@ public abstract class Atm {
         this.movimientodao = movimientodao;
     }
 
+    public static Map<String, Double> getCacheRst() {
+        return cacheRst;
+    }
+
+    public static void setCacheRst(Map<String, Double> cacheRst) {
+        Atm.cacheRst = cacheRst;
+    }
+
+    public static Set<String> getCacheRetirosCobrados() {
+        return cacheRetirosCobrados;
+    }
+
+    public static void setCacheRetirosCobrados(Set<String> cacheRetirosCobrados) {
+        Atm.cacheRetirosCobrados = cacheRetirosCobrados;
+    }
+
     @Override
     public String toString() {
         return "Atm{" +
@@ -168,9 +183,17 @@ public abstract class Atm {
         return cuentas;
     }
 
-    public void generarRetirosSinTrajeta(){}
+    public void generarRetirosSinTrajeta(){
+        //metodo hecho solo pára automatizar la generacion de los retiros asociandolos a una cuenta
+        //leida desde la db
+        //genera 5 retiros sin tarjeta con valores aleatorios
+        for (CuentaDTO dto:getCacheCuentas()){
+            cacheRst.put(dto.getNumCuenta()+":"+Helper.generarReferencia()+":"+Helper.generarClave(), Double.parseDouble(Helper.generarMonto()));
+        }
 
-    public abstract void cobrarRetirosSinTarjeta();
+    }
+
+    public abstract Ticket cobrarRetirosSinTarjeta();
 
     public void  inspeccionarCacheRetirosDiarios(){
 

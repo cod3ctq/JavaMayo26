@@ -1,10 +1,67 @@
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 public class CajeroBasico extends Atm implements IOperacionesBasicas{
     @Override
-    public void cobrarRetirosSinTarjeta() {
+    public Ticket cobrarRetirosSinTarjeta() throws InvalidNumberReferenceException, WithDrawalAlreadyCollectedException{
+        Ticket  ticket = null;
+        Scanner scan = new Scanner(System.in);
+        System.out.println("CAPTURA LA REFERENCIA");
+        String ref = scan.nextLine();
 
+        //busca la existencia de la referencia
+        boolean existe = false;
+        String llave="";
+        for (String key:cacheRst.keySet()){
+            if (key.contains(ref)){
+                existe = true;
+                llave = key; //extrae la ref:clave para usarla despues
+                break;
+            }
+        }
+
+        //-- la referencia no existe, lanzar mensaje
+        if (!existe){
+            throw new InvalidNumberReferenceException(Constantes.INVALID_NUMBER_REFERENCE);
+            //System.out.println("Retiro sin tarjeta invalido");
+        } else if (cacheRetirosCobrados.contains(ref)){ //validar si ya fue cobrado
+            throw new WithDrawalAlreadyCollectedException(Constantes.WITHADRAWAL_ALREADY_COLLECTED);
+            //System.out.println("Retiro sin tarjeta ya cobrado");
+        }else {
+
+            double nuevoSaldo= getCuentadao().getSaldoCuenta(llave.split(":")[0]) -cacheRst.get(llave);
+            getCuentadao().actualizarSaldoCuenta(llave.split(":")[0], nuevoSaldo );
+
+            cacheRetirosCobrados.add(ref); //añade el retiro al conjunto de los ya cobrados
+
+            System.out.println("IMPRIMIR TICKET ??");
+            System.out.println("Presiona 1 (SI), 2 (NO)");
+            int seleccion = scan.nextInt();
+
+            if (seleccion != 1) {
+                System.out.println("operacion finalizada");
+
+            } else {
+
+                return new Ticket(this.getDireccion(),
+                        folioOperacion++,
+                        LocalDateTime.now(),
+                        cacheRst.get(llave),
+                        "RETIRO",
+                        llave.split(":")[0]);
+            }
+
+        }
+
+
+
+        //validar si ya fue cobrada
+        //si - lanzar mensaje
+        //no - proceder al cobro
+        //registrar el cobro
+
+        return ticket;
     }
 
     @Override
@@ -15,16 +72,13 @@ public class CajeroBasico extends Atm implements IOperacionesBasicas{
         Object[] datos = new Object[2];
         try{
             CuentaDTO cuenta = this.buscarCuenta(numTarjeta, nip);
-            //colocar aqui todo el codigo que procesa el retiro,
-            //asumiemndo que ya no necesito Validar la existencia de la cuenta
-            //Buscar si existe ya algun retiro registrado, obtiene cuanto se ha retirado en este dia, si no que nulo
-            //********************* Validar que margen disponible sea< MONTO A RETIRAR.
+
             if (getCacheRetirosDiarios().containsKey(cuenta.getNumCuenta()+LocalDate.now()) &&
                     getCacheRetirosDiarios().get(cuenta.getNumCuenta()+LocalDate.now())>= Constantes.MAX_RETIRO_DIARIO){ //si el monton retirado supera el maximo.
                 //Registro el retiro y guardo el monto que acabo de retirar
                 getCacheRetirosDiarios().put(cuenta.getNumCuenta()+LocalDate.now(), monto);
                 throw new MaxDailyWithdrawalsExceededException(Constantes.MAX_DAILY_WITHDRAWAL_EXCEEDED);
-            }else if(! (monto%100==0) ){//cantidad multiplo de 100
+            }else if(! (monto%100==0) || monto<=0){//cantidad multiplo de 100
                 throw new InvalidQuantityException(Constantes.INVALID_QUANTITY);
             } else if (cuenta.getSaldo()<monto){//Verificar si me alcanza
                 throw new InsufficentBalanceExeption(Constantes.INSUFFICENT_BALANCE);
@@ -75,6 +129,8 @@ public class CajeroBasico extends Atm implements IOperacionesBasicas{
 
     @Override
     public Ticket pagarServicio(String convenio, String referencia) {
+
+
         return null;
     }
 }

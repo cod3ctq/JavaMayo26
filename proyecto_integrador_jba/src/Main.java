@@ -2,6 +2,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.sql.Date;
+import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -26,9 +27,27 @@ public class Main {
         imprimeLogo();
 
         //ciclo temporal, solo para probar el metodo que lee las cuentas desde la db
-        for(CuentaDTO dto: cb.getCacheCuentas()){
-            System.out.println(dto);
+//        for(CuentaDTO dto: cb.getCacheCuentas()){
+//            System.out.println(dto);
+//        }
+
+        //ciclo temporal, solo para ver que retiros sin tarjeta existen publicados
+        cb.generarRetirosSinTrajeta(); //invoca el metodo que genera los retiros
+        for (String ret :cb.getCacheRst().keySet()){
+            System.out.println(ret +" - "+cb.getCacheRst().get(ret));
         }
+        Scanner scan = new Scanner(System.in);
+        int c=1;
+        while (c>0) {
+            Ticket rstc = pc.cobrarRetirosSinTarjeta();
+            System.out.println(rstc);
+            System.out.println("CONTINUAR ??");
+            System.out.println("1-Si, 0-No");
+            c = scan.nextInt();
+
+        }
+
+
 //        ModuloAtencion ma = new ModuloAtencion();
 //        ma.mostrarClientes();
 //
@@ -58,40 +77,39 @@ public class Main {
 //
 //        System.out.println(efectivo1);
 //        System.out.println(ticket1);
-        System.out.println(">>>>> SALDO INICIAL DE LA CUENTA >>>>> : ");
-        cb.consultarSaldo("5578123412340003","3456");
 
 
-        //Ticket generado por un deposito, debe reflejarse el nuevo saldo de la cuenta
-        Ticket t1 = pc.depositar("5578123412340003", 3500, "3456");
-        System.out.println(">>>Deposito :"+t1);
-
-        pc.consultarSaldo("5578123412340003", "3456");
-
-
-
-//        Object[] resultados = cb.retirar("5578123412340003", 5000,"3456");
+//        System.out.println(">>>>> SALDO INICIAL DE LA CUENTA >>>>> : ");
+//        cb.consultarSaldo("5578123412340005","5678");
+//
+//        Object[] resultados = cb.retirar("5578123412340005", 5000,"5678");
 //        System.out.println("RETIRO 1 $$$ : "+(double) resultados[0]);
 //        System.out.println((Ticket) resultados[1]);
-//        cb.consultarSaldo("5578123412340003","3456");
+//        cb.consultarSaldo("5578123412340005","5678");
 //        cb.inspeccionarCacheRetirosDiarios();
-////
-//        Object[] resultados2 = cb.retirar("5578123412340003", 2800,"3456");
+//
+//        Object[] resultados2 = cb.retirar("5578123412340005", 2800,"5678");
 //        System.out.println("RETIRO 2 $$$ : "+(double) resultados2[0]);
 //        System.out.println((Ticket) resultados2[1]);
-//        cb.consultarSaldo("5578123412340003","3456");
+//        cb.consultarSaldo("5578123412340005","5678");
 //        cb.inspeccionarCacheRetirosDiarios();
 //
-//        Object[] resultados3 = cb.retirar("5478123498761234", 2000,"4821");
+//        Object[] resultados3 = cb.retirar("5578123412340005", 2000,"5678");
 //        System.out.println("RETIRO 3 $$$ : "+(double) resultados3[0]);
 //        System.out.println((Ticket) resultados3[1]);
-//        cb.consultarSaldo("5478123498761234","4821");
+//        cb.consultarSaldo("5578123412340005","5678");
 //        cb.inspeccionarCacheRetirosDiarios();
 //
-//        Object[] resultados4 = cb.retirar("5478123498761234", 100,"4821");
+//        Object[] resultados4 = cb.retirar("5578123412340005", 1000,"5678");
 //        System.out.println("RETIRO 4 $$$ : "+(double) resultados4[0]);
 //        System.out.println((Ticket) resultados4[1]);
-//        cb.consultarSaldo("5478123498761234","4821");
+//        cb.consultarSaldo("5578123412340005","5678");
+//
+//        //Ticket generado por un deposito, debe reflejarse el nuevo saldo de la cuenta
+//        Ticket t1 = pc.depositar("5578123412340005", 7000, "5678");
+//        System.out.println(">>>Deposito :"+t1);
+//
+//        pc.consultarSaldo("5578123412340005", "5678");
 
     }
         static void imprimeLogo() throws Exception{
