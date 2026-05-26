@@ -13,8 +13,8 @@ public class MovimientoDAO {
 
         try{
 
-            Class.forName("oracle.jdbc.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521/ORCLPDB","db1","admin123");
+            con = ConexionOracle.getInstance().getCon();    //Apunta a la unica conexion de la db
+            System.out.println(">>>>>>>>>>>>>>>>>>>>LAMADA A LA BASE Y:"+con);
             ps = con.prepareStatement(query);
             ps.setInt(1, cuentaId);
             ps.setString(2, operacion);

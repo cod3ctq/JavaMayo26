@@ -3,10 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class Atm {
 
@@ -15,16 +12,18 @@ public abstract class Atm {
     public static int folioOperacion = 0; //contador global de todas las operaciones del cajero
     private Cuenta[] database;
     public static Map<String, Double> cacheRetirosDiarios = new HashMap<String, Double>();
-    List<CuentaDTO>cacheCuentas = new ArrayList<CuentaDTO>();
+    List<CuentaDTO>cacheCuentas = new ArrayList<CuentaDTO>();//obajeto que contiene las cuentas tal como viene desde la db
     private CuentaDAO cuentadao = new CuentaDAO();
     private MovimientoDAO movimientodao = new MovimientoDAO();
+
+    public static Map<String, Double> cacheRst = new HashMap<String, Double>();//Retiros con tarjeta por cobrar
+    public static Set<String> cacheRetirosCobrados = new HashSet<String>();//Referencias de retiros ya cobrados sin tarjetas
 
     //cacheRetirosDiarios
     //public static Map<String, Double> cacheRetirosDiarios = new HashMap<String, Double>();
 
     //Inyeccion de dependecias - manual
     //Se inyecta en esta clase, aunque cualquier otra tambien puede usarlo
-
 
     public Atm(){
         this.cacheCuentas = cuentadao.leerCuentas();
@@ -35,7 +34,6 @@ public abstract class Atm {
         this.folio = folio;
 
     }
-
 
     public String getDireccion() {
         return direccion;
@@ -91,6 +89,22 @@ public abstract class Atm {
 
     public void setMovimientodao(MovimientoDAO movimientodao) {
         this.movimientodao = movimientodao;
+    }
+
+    public static Map<String, Double> getCacheRst() {
+        return cacheRst;
+    }
+
+    public static void setCacheRst(Map<String, Double> cacheRts) {
+        Atm.cacheRst = cacheRst;
+    }
+
+    public static Set<String> getCacheRetirosCobrados() {
+        return cacheRetirosCobrados;
+    }
+
+    public static void setCacheRetirosCobrados(Set<String> cacheRetirosCobrados) {
+        Atm.cacheRetirosCobrados = cacheRetirosCobrados;
     }
 
     @Override
@@ -156,9 +170,17 @@ public abstract class Atm {
         return cuentas;
     }
 
-    public void generarRetirosSinTarjeta(){}
+    //Motodo solo para automatizar la generacion de los retiros asociados a una cuenta
+    //leida desde la db solo para simular datos
+    public void generarRetirosSinTarjeta(){
+        // Genera 5 retiros sin tarjeta con valores aleatorios
+        for(CuentaDTO dto:getCacheCuentas()){
+            cacheRst.put(dto.getNumCuenta()+":"+Helper.generarReferencia()+":"+Helper.generarClave(), Double.parseDouble(Helper.generarMonto()));
 
-    public abstract void cobrarRetiroSinTarjeta();
+        }
+    }
+
+    public abstract Ticket cobrarRetiroSinTarjeta();
 
     public void inspeccionarCacheRetirosDiarios(){
         for(String registro:cacheRetirosDiarios.keySet()){
@@ -167,13 +189,5 @@ public abstract class Atm {
     }
 
     //Leer los datos desde la base
-
-
-
-
-
-
-
-
 
 }
