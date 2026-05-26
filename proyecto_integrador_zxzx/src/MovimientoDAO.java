@@ -12,8 +12,9 @@ public class MovimientoDAO {
         String query="INSERT INTO MOVIMIENTOS(CUENTA_ID, TIPO, FECHA_OP, MONTO)VALUES(?,?,?,?)";
 
         try{
-            Class.forName("oracle.jdbc.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","db3","admin");
+
+            con = ConexionOracle.getInstance().getCon(); //apunta a la unica conexion a la db
+            System.out.println(">>>>>>>LLAMADA A LA BASE Y:"+con);
             ps = con.prepareStatement(query);
             ps.setInt(1, cuentaId);
             ps.setString(2, operacion);

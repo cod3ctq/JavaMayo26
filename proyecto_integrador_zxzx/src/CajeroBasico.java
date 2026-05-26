@@ -1,35 +1,77 @@
-import javax.security.auth.login.AccountException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 public class CajeroBasico extends Atm implements IOperacionesBasicas{
 
 
+
+
     @Override
-    public void cobrarRetiroSinTarjeta() {
+    public Ticket cobrarRetiroSinTarjeta() throws InvalidCardNumberException, WithdrawalAlreadyReceivedException{
 
+        Ticket ticket = null;
+        Scanner scan = new Scanner(System.in);
+        System.out.println("CAPTURA LA REFERENCIA");
+        String ref = scan.nextLine();
+
+        //buscar que exista la referencia
+        boolean existe = false;
+        String llave="";
+        for(String key:cacheRst.keySet()){
+            if (key.contains(ref)) {
+                existe = true;
+                llave = key; //Extrae la key(numCuenta:ref:clave) para usarla despues
+                break;
+            }
+        }
+
+        //-- la ref no existe, lanzar mensaje
+        if(!existe){
+            System.out.println("Retiro sin tarjeta invalido");
+            throw new InvalidCardNumberException(Constantes.INVALID_CARD_NUMBER);
+        }else if(cacheRetirosCobrados.contains(ref)) { //si ya fue cobrado ...
+            System.out.println("Retiro sin tarjeta ya cobrado");
+            throw new WithdrawalAlreadyReceivedException(Constantes.WITHDRAWAL_ALREADY_RECEIVED);
+        }else{
+            double nuevoSaldo = getCuentadao().getSaldoCuenta( llave.split(":")[0]) - cacheRst.get(llave);
+            getCuentadao().actualizarSaldoCuenta(llave.split(":")[0],nuevoSaldo);
+            cacheRetirosCobrados.add(ref); //añade el retiro al cojunto de los ya cobrados
+            System.out.println("IMPRIMIR TICKET ??");
+            System.out.println("Presiona 1 (SI), 2 (NO)");
+            int seleccion = scan.nextInt();
+
+            if(seleccion!=1){
+                System.out.println("Operacion Finalizada");
+            }else{
+                ticket = new Ticket(this.getDireccion(),
+                        folioOperacion++,
+                        LocalDateTime.now(),
+                        cacheRst.get(llave),
+                        "RETIRO",
+                        llave.split(":")[0]);
+            }
+        }
+        return ticket;
     }
-
     @Override
     public Object[] retirar(String numTarjeta, double monto, String nip)
             throws MaxDailyWithdrawalsExceededException, InvalidQuantityException,
             InsufficentBalanceException,UnderMinimunException{
-
         Object[] datos = new Object[2];
         try{
             CuentaDTO cuenta = this.buscarCuenta(numTarjeta, nip);
-            //*****************  VALIDAR QUE MARGEN DISPONIBLE SEA <= MONTO A RETIRAR
             if(   getCacheRetirosDiarios().containsKey(cuenta.getNumCuenta()+LocalDate.now()) &&
                     getCacheRetirosDiarios().get(cuenta.getNumCuenta()+LocalDate.now())>=Constantes.MAX_RETIRO_DIARIO)  { //Si el monto retirado supera el maximo
                 throw new MaxDailyWithdrawalsExceededException(Constantes.MAX_DAILY_WITHDRAWAL_EXCEEDED);
-            }else if( ! (monto%100==0) ){ //validar que cantidad multiplo de 100
+            }else if( ! (monto%100==0) || monto<=0 ){ //validar que cantidad multiplo de 100
                 throw new InvalidQuantityException(Constantes.INVALID_QUANTITY);
             } else if(cuenta.getSaldo() <  monto){ //Verificar si me alcanza
                 throw new InsufficentBalanceException(Constantes.INSUFFICENT_BALANCE);
             }else if( (cuenta.getSaldo() - monto) < cuenta.getSaldoMin()){ //Validar que si retiro, quede por encima del minimo
                 throw new UnderMinimunException(Constantes.UNDER_MINIMUN);
             }else{
-
                 //calculo el indice del objeto original dentro de la lista
                 int index = this.getCacheCuentas().indexOf(cuenta);
                 //retirar
@@ -66,8 +108,19 @@ public class CajeroBasico extends Atm implements IOperacionesBasicas{
         return datos;
     }
 
+
     @Override
-    public Ticket pagarServicio(String convenio, String referencia) {
-        return null;
+    public Ticket pagarServicio(String numTarjeta,String convenio, String referencia) {
+        //Clases nuevas: ServiciosDAO, inyectar desde Atm
+        Ticket ticket = null;
+        boolean ok = this.getServiciosDAO().pagarServicio(numTarjeta, convenio, referencia);
+
+        if (ok) {
+            return new Ticket(this.getDireccion(), folioOperacion++,
+                    LocalDateTime.now(),0.0,"PAGO SERVICIOS", "");
+            //implementar aqui el patron builder ....
+        }
+
+        return ticket;
     }
 }

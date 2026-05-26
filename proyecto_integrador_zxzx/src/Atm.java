@@ -1,34 +1,36 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class Atm {
 
     private String direccion;
     private String folio;
     public static int folioOperacion=0; // contador global de todas las operaciones del cajero
-    private Cuenta[] database; //composicion
-    private List<CuentaDTO> cacheCuentas; //objeto que contiene las cuentas tal como vienen desde la db
+    //private Cuenta[] database; //composicion
+    private  static List<CuentaDTO> cacheCuentas; //objeto que contiene las cuentas tal como vienen desde la db
     //cacheRetirosDiarios
     public static Map<String, Double> cacheRetirosDiarios = new HashMap<String,Double>();
+    public static Map<String, Double> cacheRst = new HashMap<String,Double>(); //Retiros sin tarjeta por cobrar
+    public static Set<String> cacheRetirosCobrados = new HashSet<String>(); //Referencias de rst ya cobrados
 
     //Inyeccion de dependencias  - manual
     //Se inyecta en esta clase, aunque cualquier otra tambien puede usarlo
     private CuentaDAO cuentadao = new CuentaDAO();
     private MovimientoDAO movimientodao  =new MovimientoDAO();
+    private ServiciosDAO serviciosDAO = new ServiciosDAO();
+
 
     public Atm(){
         //this.database = cargarCuentas();
-        this.cacheCuentas = cuentadao.leerCuentas(); //llena automaticamente el cache trayendo las cuentas desde la db
+        cacheCuentas = cuentadao.leerCuentas(); //llena automaticamente el cache trayendo las cuentas desde la db
     }
 
     public Atm(String direccion, String folio) {
         this.direccion = direccion;
         this.folio = folio;
-        this.database = cargarCuentas();
+        //this.database = cargarCuentas();
     }
 
     public String getDireccion() {
@@ -87,6 +89,30 @@ public abstract class Atm {
         this.cuentadao = cuentadao;
     }
 
+    public static Map<String, Double> getCacheRst() {
+        return cacheRst;
+    }
+
+    public static void setCacheRst(Map<String, Double> cacheRst) {
+        Atm.cacheRst = cacheRst;
+    }
+
+    public static Set<String> getCacheRetirosCobrados() {
+        return cacheRetirosCobrados;
+    }
+
+    public static void setCacheRetirosCobrados(Set<String> cacheRetirosCobrados) {
+        Atm.cacheRetirosCobrados = cacheRetirosCobrados;
+    }
+
+    public ServiciosDAO getServiciosDAO() {
+        return serviciosDAO;
+    }
+
+    public void setServiciosDAO(ServiciosDAO serviciosDAO) {
+        this.serviciosDAO = serviciosDAO;
+    }
+
     @Override
     public String toString() {
         return "Atm{" +
@@ -96,7 +122,7 @@ public abstract class Atm {
     }
     //throw:Va dentro de la logica del metodo, crea o instancia la excepcion
     //throws: Va en la firma del metodo, propaga la excepcion
-    public CuentaDTO buscarCuenta(String numTarjeta, String nip) throws AccountNotFoundException{
+    public static CuentaDTO buscarCuenta(String numTarjeta, String nip) throws AccountNotFoundException{
         CuentaDTO encontrado = null;
         //Buscar dentro del array de cuentas, a la cuenta con el numero y nip ingresados
         for(int i=0; i<cacheCuentas.size(); i++){
@@ -147,9 +173,16 @@ public abstract class Atm {
         return cuentas;
     }
 
-    public void generarRetiroSinTarjeta(){}
+    //Metodo hecho solo para automatizar la generacion de los retiros asociandolos a una cuenta
+    //leida desde la db. SOLO PARA SIMULAR LOS DATOS
+    public void generarRetiroSinTarjeta(){
+        //Genera 1 retiro asociado a cada cuenta con valores aleatorios
+        for(CuentaDTO dto:getCacheCuentas()){
+            cacheRst.put(dto.getNumCuenta()+":"+Helper.generarReferencia()+":"+Helper.generarClave(), Double.parseDouble(Helper.generarMonto()));
+        }
+    }
 
-    public abstract void cobrarRetiroSinTarjeta();
+    public abstract Ticket cobrarRetiroSinTarjeta();
 
     public void inspeccionarCacheRetirosDiarios(){
 
@@ -159,4 +192,6 @@ public abstract class Atm {
         }
 
     }
+
+
 }
