@@ -21,6 +21,9 @@ public abstract class ATM {
     private List<CuentaDTO> cacheCuentas;  //Objeto que contiene las cuentas tal como vienen desde la db no usan
     //Caché de retiros diarios.
     public static Map<String, Double> cacheRetiroDiarios = new HashMap<String,Double>();
+    public static Map<String,Double> cacheRST = new HashMap<String, Double>();//Retiro sin tarjeta por cobrar
+    public static Set<String> cacheRetirosCobrados = new HashSet<String>(); //Referencia de rst ya cobrados
+
     //Inyeccion de dependencias - manual
     //Se inyecta en esta clase, aunque cualquier otra tambien puede usarlo
     private CuentaDAO cuentadao = new CuentaDAO();
@@ -95,6 +98,22 @@ public abstract class ATM {
         this.cuentadao = cuentadao;
     }
 
+    public static Map<String, Double> getCacheRST() {
+        return cacheRST;
+    }
+
+    public static void setCacheRST(Map<String, Double> cacheRST) {
+        ATM.cacheRST = cacheRST;
+    }
+
+    public static Set<String> getCacheRetirosCobrados() {
+        return cacheRetirosCobrados;
+    }
+
+    public static void setCacheRetirosCobrados(Set<String> cacheRetirosCobrados) {
+        ATM.cacheRetirosCobrados = cacheRetirosCobrados;
+    }
+
     @Override
     public String toString() {
         return "ATM{" +
@@ -164,9 +183,18 @@ public abstract class ATM {
         return cuentas;
     }
 
-    public void generarRetirosSinTarjeta(){}
+    public void generarRetirosSinTarjeta(){
 
-    public abstract void cobrarRetiroSinTarjeta();
+        //Genera 5 retiros sin tarjeta con valores aleatorios
+
+        for (CuentaDTO dto:getCacheCuentas()){
+            cacheRST.put(dto.getNumCuenta()+":"+Helper.generarReferencia()+":"+Helper.generarClave(),Double.parseDouble(Helper.generarMonto()));
+
+        }
+
+    }
+
+    public abstract Ticket cobrarRetiroSinTarjeta();
 
     public void inspeccionarCacheRetirosDiarios(){
 
