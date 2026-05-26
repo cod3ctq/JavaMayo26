@@ -11,6 +11,8 @@ public abstract class Atm {
     private Cuenta[] database; // Array que almacenará los Objetos de tipo Cuenta (esto es composición)
     private List<CuentaDTO> cacheCuentas = new ArrayList<>(); // Objeto que contendrá las cuentas tal como vienen de la db
     public static Map<String, Double> cacheRetirosDiarios = new HashMap<>(); // Se hace en esta clase porque ambos tipos de cajeros deben tener este atributo
+    public static Map<String, Double> cacheRetiroSinTar = new HashMap<>(); // Retiros sin tarjeta por cobrar
+    public static Set<String> cacheRetirosCobrados = new HashSet<>(); // Referencia de retiros sin tarjeta ya cobrados
 
     // Inyección de dependencias - manual
     // Se inyecta en esta Clase, aunque cualquiera que lo necesite puede usarlo
@@ -77,6 +79,18 @@ public abstract class Atm {
     public void setMovimientodao(MovimientoDAO movimientodao) {
         this.movimientodao = movimientodao;
     }
+    public static Map<String, Double> getCacheRetiroSinTar() {
+        return cacheRetiroSinTar;
+    }
+    public static void setCacheRetiroSinTar(Map<String, Double> cacheRetiroSinTar) {
+        Atm.cacheRetiroSinTar = cacheRetiroSinTar;
+    }
+    public static Set<String> getCacheRetirosCobrados() {
+        return cacheRetirosCobrados;
+    }
+    public static void setCacheRetirosCobrados(Set<String> cacheRetirosCobrados) {
+        Atm.cacheRetirosCobrados = cacheRetirosCobrados;
+    }
 
     // Metodo toString
     @Override
@@ -139,10 +153,15 @@ public abstract class Atm {
         return cuentas;
     }
 
-    public void generarRetiroSinTarjeta() {
+    public void generarRetiroSinTarjeta() { // Metodo hecho sólo para automatizar la generación de los retiros asociándolos a una cuenta leída desde la db
+        // ESTO ES SÓLO PARA SIMULAR DATOS
+        // Generamos 5 retiros sin tarjeta
+        for (CuentaDTO dto : getCacheCuentas()) {
+            cacheRetiroSinTar.put(dto.getNumCuenta() + ":" + Helper.generarReferencia() + ":" + Helper.generarClave(), Double.parseDouble(Helper.generarMonto()));
+        }
     }
 
-    public abstract void cobrarRetiroSinTarjeta(); // Metodo abstracto, por eso no tiene cuerpo (llaves)
+    public abstract Ticket cobrarRetiroSinTarjeta(); // Metodo abstracto, por eso no tiene cuerpo (llaves)
 
     public void inspeccionarCacheRetirosDiarios() {
         for (String registro : cacheRetirosDiarios.keySet()) { // keySet() para iterar sobre el set de llaves del Mapa

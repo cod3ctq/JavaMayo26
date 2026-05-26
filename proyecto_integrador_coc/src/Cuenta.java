@@ -1,4 +1,4 @@
-// Esta es una Clase Identidad, almacenará la información de la base de datos
+// Esta es una Clase Identidad, almacenará la información tal cual la db
 public class Cuenta {
     // Atributos
     private String numCuenta;

@@ -5,15 +5,16 @@ import java.time.LocalDate;
 // Patrón de diseño DAO: Esta Clase encapsula la lógica de acceso a datos de los movimientos de la db (consultas) en un sólo lugar
 public class MovimientoDAO {
     // Atributos
-    private Connection con = null;
-    private PreparedStatement ps = null;
-    private ResultSet rs = null;
+    private Connection con = null; // Variable que almacenará el Objeto de tipo Connection
+    private PreparedStatement ps = null; // Variable que almacenará la interpretación de la sentencia que queremos utilizar en la db
+    private ResultSet rs = null; // Varible que almacenará el resultado de la consulta a la db
 
     public void registrarMovimiento(int cuentaId, String tipoOperacion, double monto) {
         String query = "INSERT INTO MOVIMIENTOS(CUENTA_ID, TIPO, FECHA_OP, MONTO) VALUES (?, ?, ?, ?)";
         try {
-            Class.forName("oracle.jdbc.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "db1", "admin");
+            // Llamamos a los métodos .getInstance() y .getCon() de la Clase ConexionOracle y almacenamos en variable de tipo Connection
+            con = ConexionOracle.getInstance().getCon(); // Apunta a la única conexión a la db
+            System.out.println(">>>>> LLAMADA A LA DB Y: " + con);
             ps = con.prepareStatement(query);
             ps.setInt(1, cuentaId);
             ps.setString(2, tipoOperacion);

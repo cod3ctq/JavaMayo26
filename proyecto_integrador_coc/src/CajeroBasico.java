@@ -1,10 +1,49 @@
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Scanner;
 
 public class CajeroBasico extends Atm implements IOperacionesBasicas{ // Hereda de 1 e implementa de 1
 
     @Override
-    public void cobrarRetiroSinTarjeta() {
+    public Ticket cobrarRetiroSinTarjeta() throws InvalidCardlessWithdrawalException, WithdrawalAlreadyProcessedException {
+        Ticket ticket = null; // Definimos variable a delolver
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Captura la referencia: ");
+        String ref = scan.nextLine();
+
+        // Validar que exista la referencia en el mapa cacheRetiroSinTar
+        String llave = "";
+        boolean existe = false;
+        for (String key : cacheRetiroSinTar.keySet()) { // Iteramos las llaves del mapa con ciclo forEach
+            if (key.contains(ref)) { // Si en las llaves existe la referencia
+                existe = true; // Cambiamos la variable existe a true
+                llave = key; // Extrae la key (numCuenta:ref:clave) para usarla después
+                break;
+            }
+        }
+        if (! existe) { // Si la referencia no existe
+            throw new InvalidCardlessWithdrawalException(Constantes.INVALID_CARDLESS_WITHDRAWAL); // Lanzamos excepción
+        } else if (cacheRetirosCobrados.contains(ref)) { // Si el caché de retiros cobrados contiene la referencia, o sea que ya fue cobrado
+            throw new WithdrawalAlreadyProcessedException(Constantes.CARDLESS_WITHDRAWAL_PROCESSED); // Lanzamos excepción
+        } else { // Existe la referencia y no se ha cobrado
+            double nuevoSaldo = getCuentadao().getSaldoCuenta(llave.split(":")[0]) - cacheRetiroSinTar.get(llave); // Definimos el nuevo saldo
+            getCuentadao().actualizarSaldoCuenta(llave.split(":")[0], nuevoSaldo); // Con split() creamos un array y obtenemos el índice [0]
+            cacheRetirosCobrados.add(ref); // Si existe y no se ha cobrado, añadimos la referencia al conjunto de los retiros ya cobrados
+            System.out.println("Imprimir ticket?");
+            System.out.println("1 (SI), 2 (NO)");
+            int seleccion = Integer.parseInt(scan.nextLine());
+            if (seleccion != 1) {
+                System.out.println("Operación finalizada");
+            } else {
+                ticket = new Ticket(this.getDireccion(), // Si lo desea, creamos Objeto de tipo ticket para devolverlo
+                        folioOperacion++,
+                        LocalDateTime.now(),
+                        cacheRetiroSinTar.get(llave),
+                        "RETIRO",
+                        llave.split(":")[0]);
+            }
+        }
+        return ticket;
     }
 
     @Override
@@ -20,8 +59,8 @@ public class CajeroBasico extends Atm implements IOperacionesBasicas{ // Hereda 
             if (Atm.getCacheRetirosDiarios().containsKey(cuenta.getNumCuenta() + LocalDate.now()) && // Si existe un registro en el Mapa con esta llave...
                     Atm.getCacheRetirosDiarios().get(cuenta.getNumCuenta() + LocalDate.now()) >= Constantes.MAX_RETIRO_DIARIO) { // Y el valor es >= al maximo de retiro
                 throw new MaxDailyWithdrawalsExceedException(Constantes.MAX_DAILY_WITHDRAWAL_EXCEEDED); // Lanzamos excepción
-            } else if (! (monto % 100 == 0)) { // Si el monto a retirar NO es múltiplo de 100
-                throw new InvalidQuantityException(Constantes.INVALID_QUANTITY_EXCEPTION); // Lanzamos excepción
+            } else if (! (monto % 100 == 0) || monto <= 0) { // Si el monto a retirar NO es múltiplo de 100, o es menor o igual a 0
+                throw new InvalidQuantityException(Constantes.INVALID_QUANTITY); // Lanzamos excepción
             } else if (monto > cuenta.getSaldo()) { // Si el monto a retirar es mayor que el saldo de la cuenta
                 throw new InsufficientBalanceException(Constantes.INSUFFICIENT_BALANCE); // Lanzamos excepción
             } else if ((cuenta.getSaldo() - monto) < cuenta.getSaldoMin()) { // Si el saldo menos el monto a retirar es menor al saldo mínimo permitido de la cuenta
@@ -56,6 +95,7 @@ public class CajeroBasico extends Atm implements IOperacionesBasicas{ // Hereda 
         }
         return datos; // Retornamos el array con el monto a retirar y el Objeto de tipo Ticket
     }
+
     @Override
     public Ticket pagarServicio(String convenio, String referencia) {
         return null;

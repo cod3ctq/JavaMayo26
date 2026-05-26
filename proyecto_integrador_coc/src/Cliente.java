@@ -1,3 +1,4 @@
+// Esta es una Clase Identidad, almacenará la información tal cual la db
 import java.sql.Date;
 
 public class Cliente {
