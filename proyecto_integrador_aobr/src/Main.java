@@ -2,6 +2,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.sql.Date;
+import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -27,11 +28,29 @@ public class Main {
 
 
         //ciclo temporal, solo para probar el metodo que lee las cuentas desde la base de datos
-        for (CuentaDTO dto:cb.getCacheCuentas()){
-            System.out.println(dto);
+//        for (CuentaDTO dto:cb.getCacheCuentas()){
+//            System.out.println(dto);
+//
+//        }
 
+
+       // ciclo temporal, solo para ver que retiros sin tarjeta existen publicados
+        cb.generarRetiroSinTarjeta();
+        for(String ret : cb.getCacheRst().keySet()){
+            System.out.println(ret+" - "+cb.getCacheRst().get(ret));
         }
 
+        Scanner teclado = new Scanner(System.in);
+
+        int c = 1;
+        while(c>0){
+
+            Ticket rstc = pc.cobrarRetiroSinTarjeta();
+            System.out.println(rstc);
+            System.out.println("CONTINUAR ??");
+            System.out.println("1 - Si, 0 - No");
+            c= teclado.nextInt();
+        }
 
 
 
@@ -42,41 +61,41 @@ public class Main {
 //        ma.registrarCliente(nuevo);
 
 
-        System.out.println(">>>>> SALDO INICIAL DE LA CUENTA >>>>> : ");
-        cb.consultarSaldo("5578123412340004","4567");
-//
-//        Object[] resultados = cb.retirar("5578123412340004", 5000,"4567");
+//        System.out.println(">>>>> SALDO INICIAL DE LA CUENTA >>>>> : ");
+//        cb.consultarSaldo("5578123412340004","4567");
+////
+//        Object[] resultados = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 1 $$$ : "+(double) resultados[0]);
 //        System.out.println((Ticket) resultados[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 ////
-//        Object[] resultados2 = cb.retirar("5578123412340004", 2800,"4567");
+//        Object[] resultados2 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 2 $$$ : "+(double) resultados2[0]);
 //        System.out.println((Ticket) resultados2[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 //
-//        Object[] resultados3 = cb.retirar("5478123498761234", 2000,"4821");
+//        Object[] resultados3 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 3 $$$ : "+(double) resultados3[0]);
 //        System.out.println((Ticket) resultados3[1]);
-//        cb.consultarSaldo("5478123498761234","4821");
+//        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 //
-//        Object[] resultados4 = cb.retirar("5478123498761234", 100,"4821");
+//        Object[] resultados4 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 4 $$$ : "+(double) resultados4[0]);
 //        System.out.println((Ticket) resultados4[1]);
-//        cb.consultarSaldo("5478123498761234","4821");
-
-
-
-
-
-          Ticket t1= pc.depositar("5578123412340004",15000,"4567");
-          System.out.println(">>>>Deposito: " +t1);
-
-        //despues del deposito, debe reflejasrse el nuevo saldo en la cuenta
-        pc.consultarSaldo("5578123412340004","4567");
+//        cb.consultarSaldo("5578123412340004","4567");
+//
+//
+//
+//
+//
+//          Ticket t1= pc.depositar("5578123412340004",7000,"4567");
+//          System.out.println(">>>>Deposito: " +t1);
+//
+//        //despues del deposito, debe reflejasrse el nuevo saldo en la cuenta
+//        pc.consultarSaldo("5578123412340004","4567");
 
     }
 
