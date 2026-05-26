@@ -2,9 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class Atm {
 
@@ -16,6 +14,11 @@ public abstract class Atm {
 
     //cache de retiros diarios
     public static Map<String, Double> cacheRetirosDiarios = new HashMap<String, Double>(); // static para que el valor se comparta en tre la estancia de la clase cajerobasico y practicaja
+
+    public static Map<String,Double> cacheRst = new HashMap<String,Double>();//Retiros sin tarjeta por cobrar
+
+    public static Set<String> cacheRetirosCobrados = new HashSet<String>();//Referencias de retiros sin tarjeta ya cobrados
+
 
     //Inyeccion de dependencias - manual
     //Se inyecta en esta clase, aunque cualquier otra tambien puede usarlo
@@ -96,6 +99,22 @@ public abstract class Atm {
         this.movimientodao = movimientodao;
     }
 
+    public static Map<String, Double> getCacheRst() {
+        return cacheRst;
+    }
+
+    public static void setCacheRst(Map<String, Double> cacheRst) {
+        Atm.cacheRst = cacheRst;
+    }
+
+    public static Set<String> getCacheRetirosCobrados() {
+        return cacheRetirosCobrados;
+    }
+
+    public static void setCacheRetirosCobrados(Set<String> cacheRetirosCobrados) {
+        Atm.cacheRetirosCobrados = cacheRetirosCobrados;
+    }
+
     @Override
     public String toString() {
         return "Atm{" +
@@ -158,15 +177,27 @@ private Cuenta[] cargarCuentas(){
     }
     return cuentas;
 }
-public void generarRetirosSinTarjeta(){}
+    //Metodo echo solo para automatizar la generacion de los retiros asociandolos a una cuenta
+    //leida desde la bs.Solo para simular datos
+public void generarRetirosSinTarjeta(){
+        //Genera 5 retiros sin tarjeta
+    for (CuentaDTO dto:getCacheCuentas()){
+        cacheRst.put(dto.getNumCuenta()+":" +Helper.generarReferencia()+":"+Helper.generarClave(),Double.parseDouble(Helper.generarMonto()));
 
-    public abstract void cobrarRetiroSinTarjeta();
+
+
+    }
+}
+
+    public abstract Ticket cobrarRetiroSinTarjeta();
 
         public void inspeccionarCacheRetirosDiarios(){
             for (String registro:cacheRetirosDiarios.keySet()){
                 System.out.println(registro + " : " + cacheRetirosDiarios.get(registro));
             }
     }
+
+
 
 
 

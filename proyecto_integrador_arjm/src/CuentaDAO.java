@@ -27,11 +27,10 @@ public class CuentaDAO {
         List<CuentaDTO> dtos = new ArrayList<CuentaDTO>();
         CuentaDTO dto = null;
         try {
-            Class.forName("oracle.jdbc.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","db1","admin");
+            con = ConexionOracle.getInstance().getCon();//Apunta a la unica conexion a la base de datos
+            System.out.println(">>> LLAMADA A LA BASE 1: "+con);
             ps = con.prepareStatement(query);
             rs = ps.executeQuery();
-
             while (rs.next()){
                 dto = new CuentaDTO(rs.getString("NUM_TARJETA"), rs.getString("NIP"),
                         rs.getInt("CUENTA_ID"), rs.getString("NUM_CUENTA"),
@@ -50,8 +49,9 @@ public class CuentaDAO {
         String query = "UPDATE CUENTAS SET SALDO = ? WHERE NUM_CUENTA = ? ";
 
         try{
-            Class.forName("oracle.jdbc.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","db1","admin");
+
+            con = ConexionOracle.getInstance().getCon();
+            System.out.println(">>> LLAMADA A LA BASE x: "+con);
             ps = con.prepareStatement(query);
             ps.setDouble(1,nuevoSaldo);
             ps.setString(2, numCuenta);
@@ -65,6 +65,23 @@ public class CuentaDAO {
         }catch (Exception ex){
             ex.printStackTrace();
         }
+    }
+    public double  getSaldoCuenta(String numCuenta){
+        String query = "SELECT SALDO FROM CUENTAS WHERE NUM_CUENTA ='" + numCuenta+"'";
+        double saldo = 0.0;
+        try {
+            con = ConexionOracle.getInstance().getCon();
+            System.out.println(">>> LLAMADA A LA BASE x: "+con);
+            ps = con.prepareStatement(query);
+            rs = ps.executeQuery();//Ejecuta la secuencia
+
+            while (rs.next()){
+                saldo = rs.getDouble("SALDO");
+            }
+        }catch (Exception ex){
+
+        }
+        return saldo;
     }
 
 }
