@@ -1,7 +1,12 @@
+import dto.DetalleMovimientoDTO;
+import dto.ReporteMovsDTO;
+import service.impl.CajeroBasico;
+import service.impl.ModuloAtencion;
+import service.impl.PractiCaja;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.sql.Date;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -11,7 +16,7 @@ public class Main {
         imprimeLogo();
         Scanner scan = new Scanner(System.in);
 
-        //Atm uno = new Atm("Calle Ecatepec 15","HYTR048");
+        //models.Atm uno = new models.Atm("Calle Ecatepec 15","HYTR048");
 
         //uno.consultarSaldo("4489761234509876","4472");
 
@@ -24,31 +29,62 @@ public class Main {
         pc.setFolio("AA-01");
 
         //Ciclo temporal solo para probar el metodo que lee las cuentas desde la base datos
-//        for(CuentaDTO dto : cb.getCacheCuentas()){
+//        for(dto.CuentaDTO dto : cb.getCacheCuentas()){
 //            System.out.println(dto);
 //        }
 //
          //ciclo temporal solo para ver que retiros sin tarjte existen publicados
-        cb.generarRetirosSinTarjeta();
-        for(String ret:cb.getCacheRst().keySet()){
-            System.out.println(ret+" - "+cb.getCacheRst().get(ret));//Modificar esto despues
+//        cb.generarRetirosSinTarjeta();
+//        for(String ret:cb.getCacheRst().keySet()){
+//            System.out.println(ret+" - "+cb.getCacheRst().get(ret));//Modificar esto despues
+//        }
+
+//        int c = 1;
+//        while(c>0){
+//            models.Ticket rstc = pc.cobrarRetiroSinTarjeta();
+//            System.out.println(rstc);
+//            System.out.println("CONTINUAR ??");
+//            System.out.println("1-Si, 0-No");
+//            c = scan.nextInt();
+//        }
+
+
+//        models.Ticket ti = cb.pagarServicio("5578123412340003","TMX002","TMX-5512340001");
+//        System.out.println(ti);
+
+
+
+        ModuloAtencion ma = new ModuloAtencion();
+//        ma.registrarAbono(6,10000, 1);
+
+        try{
+            ReporteMovsDTO reporte = ma.generarReporteMovsPorCliente("CARLOS RODRIGUEZ SANCHEZ", "01/01/2016", "01/01/2024");
+            System.out.println("[>>>>>>>>REPORTE DE MOVIMIENTOS<<<<<<<<<]");
+            System.out.println("TITULAR: "+reporte.getTitular());
+            System.out.println("RFC: "+reporte.getRfc());
+            for(String key:reporte.getMovsPorCuenta().keySet()){
+                System.out.println("\t|-CUENTA: "+key.split(":")[0]);
+                System.out.println("\t|-DESCRIPCION: "+key.split(":")[1]);
+                System.out.println("\t-----------------------");
+                //Imprime ahora los detalles de cada NUM_CUENTA+DESCRIPCION
+                for(DetalleMovimientoDTO dto :reporte.getMovsPorCuenta().get(key) ){
+                    System.out.println("\t    |-----TIPO: "+dto.getTipo());
+                    System.out.println("\t    |-----FECHA: "+dto.getFecha());
+                    System.out.println("\t    |-----MONTO: "+dto.getMonto());
+                    System.out.println("\t    -----------------------");
+                }
+
+            }
+            System.out.println("INGRESOS TOTALES :"+reporte.getIngresos());
+            System.out.println("EGRESOS TOTALES: "+reporte.getEgresos());
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
         }
 
-        int c = 1;
-        while(c>0){
-            Ticket rstc = pc.cobrarRetiroSinTarjeta();
-            System.out.println(rstc);
-            System.out.println("CONTINUAR ??");
-            System.out.println("1-Si, 0-No");
-            c = scan.nextInt();
-        }
 
-
-
-//        ModuloAtencion ma = new ModuloAtencion();
 //        ma.mostrarClientes();
 //
-//        Cliente nuevo = new Cliente("Sara", "Torres", "Galicia", "Direccion de Sara", "222145789", "LIJLJNLKJHKJB",
+//        entity.Cliente nuevo = new entity.Cliente("Sara", "Torres", "Galicia", "Direccion de Sara", "222145789", "LIJLJNLKJHKJB",
 //                "SR1425367B6", new Date(1980,04,12),"1", "sara@gmail.com");
 //        ma.registrarCliente(nuevo);
 
@@ -57,32 +93,32 @@ public class Main {
 //
 //        Object[] resultados = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 1 $$$ : "+(double) resultados[0]);
-//        System.out.println((Ticket) resultados[1]);
+//        System.out.println((models.Ticket) resultados[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 //
 //        Object[] resultados2 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 2 $$$ : "+(double) resultados2[0]);
-//        System.out.println((Ticket) resultados2[1]);
+//        System.out.println((models.Ticket) resultados2[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 //
 //        Object[] resultados3 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 3 $$$ : "+(double) resultados3[0]);
-//        System.out.println((Ticket) resultados3[1]);
+//        System.out.println((models.Ticket) resultados3[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 //
 //        Object[] resultados4 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 4 $$$ : "+(double) resultados4[0]);
-//        System.out.println((Ticket) resultados4[1]);
+//        System.out.println((models.Ticket) resultados4[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 
 //        cb.consultarSaldo("5478123498761234","4821");
 //
 //        Object[] resultados = cb.retirar("5478123498761234",5000, "4821");
-//        Ticket ticket = (Ticket) resultados[1];
+//        models.Ticket ticket = (models.Ticket) resultados[1];
 //        System.out.println("RETIRO 1 : "+(double) resultados[0]);
 //        cb.consultarSaldo("5478123498761234","4821");
 //
@@ -94,9 +130,9 @@ public class Main {
 //
 //        //El casteo lo convierte a un tipo especifico, en este caso double y ticket
 //        double efectivo = (double) resultados[0];
-//        Ticket ticket2 = (Ticket) resultados2[1];
-//        Ticket ticket3 = (Ticket) resultados3[1];
-//        Ticket ticket4 = (Ticket) resultados4[1];
+//        models.Ticket ticket2 = (models.Ticket) resultados2[1];
+//        models.Ticket ticket3 = (models.Ticket) resultados3[1];
+//        models.Ticket ticket4 = (models.Ticket) resultados4[1];
 //
 //
 //        System.out.println(efectivo);
@@ -112,7 +148,7 @@ public class Main {
         //cb.cargarCuentas();
 
         //ticket generado por un deposito desde la practicaja
-//        Ticket t1 = pc.depositar("5578123412340004",100,"4567");
+//        models.Ticket t1 = pc.depositar("5578123412340004",100,"4567");
 //        System.out.println(">>>Deposito : "+t1);
         //Despues del desposito, debe reflejarse el nuevo saldo en la cuenta
 //        pc.consultarSaldo("5578123412340004","4567");
