@@ -1,15 +1,19 @@
+import dto.DetalleMovimientoDTO;
+import dto.ReporteMovsDTO;
+import service.impl.CajeroBasico;
+import service.impl.ModuloAtencion;
+import service.impl.Practicaja;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.sql.Date;
-import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) throws Exception{
 
-//        Atm uno = new Atm("Av Juarez 23", "EGC023");
+//        models.Atm uno = new models.Atm("Av Juarez 23", "EGC023");
 //
 //        uno.consultarSaldo("4912783456129087","2668");
 
@@ -28,7 +32,7 @@ public class Main {
 
 
         //ciclo temporal, solo para probar el metodo que lee las cuentas desde la base de datos
-//        for (CuentaDTO dto:cb.getCacheCuentas()){
+//        for (dto.CuentaDTO dto:cb.getCacheCuentas()){
 //            System.out.println(dto);
 //
 //        }
@@ -36,28 +40,60 @@ public class Main {
 
        // ciclo temporal, solo para ver que retiros sin tarjeta existen publicados
         cb.generarRetiroSinTarjeta();
-        for(String ret : cb.getCacheRst().keySet()){
-            System.out.println(ret+" - "+cb.getCacheRst().get(ret));
+//        for(String ret : cb.getCacheRst().keySet()){
+//            System.out.println(ret+" - "+cb.getCacheRst().get(ret));
+//        }
+//
+//        Scanner teclado = new Scanner(System.in);
+//
+//        int c = 1;
+//        while(c>0){
+//
+//            models.Ticket rstc = pc.cobrarRetiroSinTarjeta();
+//            System.out.println(rstc);
+//            System.out.println("CONTINUAR ??");
+//            System.out.println("1 - Si, 0 - No");
+//            c= teclado.nextInt();
+//        }
+
+//        models.Ticket ti= cb.pagarServicio("5578123412340003","IZZI003","IZZI-770002");
+//        System.out.println(ti);
+
+
+
+
+        ModuloAtencion ma = new ModuloAtencion();
+//        ma.registrarAbono(6, 10000,1);
+
+
+        try{
+            ReporteMovsDTO reporte = ma.generarReporteMovsPorCliente("CARLOS RODRIGUEZ SANCHEZ", "01/01/2016", "01/01/2024");
+            System.out.println("[>>>>>>>>REPORTE DE MOVIMIENTOS<<<<<<<<<]");
+            System.out.println("TITULAR: "+reporte.getTitular());
+            System.out.println("RFC: "+reporte.getRfc());
+            for(String key:reporte.getMovsPorCuenta().keySet()){
+                System.out.println("\t|-CUENTA: "+key.split(":")[0]);
+                System.out.println("\t|-DESCRIPCION: "+key.split(":")[1]);
+                System.out.println("\t-----------------------");
+                //Imprime ahora los detalles de cada NUM_CUENTA+DESCRIPCION
+                for(DetalleMovimientoDTO dto :reporte.getMovsPorCuenta().get(key) ){
+                    System.out.println("\t    |-----TIPO: "+dto.getTipo());
+                    System.out.println("\t    |-----FECHA: "+dto.getFecha());
+                    System.out.println("\t    |-----MONTO: "+dto.getMonto());
+                    System.out.println("\t    -----------------------");
+                }
+
+            }
+            System.out.println("INGRESOS TOTALES :"+reporte.getIngresos());
+            System.out.println("EGRESOS TOTALES: "+reporte.getEgresos());
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
         }
 
-        Scanner teclado = new Scanner(System.in);
 
-        int c = 1;
-        while(c>0){
-
-            Ticket rstc = pc.cobrarRetiroSinTarjeta();
-            System.out.println(rstc);
-            System.out.println("CONTINUAR ??");
-            System.out.println("1 - Si, 0 - No");
-            c= teclado.nextInt();
-        }
-
-
-
-        //ModuloAtencion ma = new ModuloAtencion();
 //        ma.mostrarClientes();
 //
-//        Cliente nuevo = new Cliente("Sara","Torres","Galicia","Direccion de Sara","0987654321","IUREHIDF21","SR32JDIAS921",new Date(1980,04,12),"1","sara@gmailcrosoft.com");
+//        entity.Cliente nuevo = new entity.Cliente("Sara","Torres","Galicia","Direccion de Sara","0987654321","IUREHIDF21","SR32JDIAS921",new Date(1980,04,12),"1","sara@gmailcrosoft.com");
 //        ma.registrarCliente(nuevo);
 
 
@@ -66,32 +102,32 @@ public class Main {
 ////
 //        Object[] resultados = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 1 $$$ : "+(double) resultados[0]);
-//        System.out.println((Ticket) resultados[1]);
+//        System.out.println((models.Ticket) resultados[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 ////
 //        Object[] resultados2 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 2 $$$ : "+(double) resultados2[0]);
-//        System.out.println((Ticket) resultados2[1]);
+//        System.out.println((models.Ticket) resultados2[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 //
 //        Object[] resultados3 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 3 $$$ : "+(double) resultados3[0]);
-//        System.out.println((Ticket) resultados3[1]);
+//        System.out.println((models.Ticket) resultados3[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //        cb.inspeccionarCacheRetirosDiarios();
 //
 //        Object[] resultados4 = cb.retirar("5578123412340004", 1000,"4567");
 //        System.out.println("RETIRO 4 $$$ : "+(double) resultados4[0]);
-//        System.out.println((Ticket) resultados4[1]);
+//        System.out.println((models.Ticket) resultados4[1]);
 //        cb.consultarSaldo("5578123412340004","4567");
 //
 //
 //
 //
 //
-//          Ticket t1= pc.depositar("5578123412340004",7000,"4567");
+//          models.Ticket t1= pc.depositar("5578123412340004",7000,"4567");
 //          System.out.println(">>>>Deposito: " +t1);
 //
 //        //despues del deposito, debe reflejasrse el nuevo saldo en la cuenta
